@@ -194,7 +194,8 @@ obj/item/clothing/gloves/botanic_leather/icewalker
 
 /datum/species/aquatic/icewalker
 	name = "Icewalker"
-	id = "mammal"
+	id = "icewalker"
+	limbs_id = "mammal"
 	say_mod = "gorgles"
 	default_color = "#00BFFF"
 	species_traits = list(MUTCOLORS,EYECOLOR,HAIR,FACEHAIR,LIPS,DIGITIGRADE)
