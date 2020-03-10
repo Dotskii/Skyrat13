@@ -1183,6 +1183,10 @@
 /obj/item/gun/ballistic/automatic/pistol/uspm,
 /turf/open/floor/plasteel/dark,
 /area/ruin/unpowered/icemoon)
+"cU" = (
+/obj/effect/landmark/bridgecreator,
+/turf/open/floor/plating/asteroid/snow/icemoon,
+/area/ruin/unpowered/icemoon)
 
 (1,1,1) = {"
 aa
@@ -1884,7 +1888,7 @@ ab
 ab
 ab
 ab
-ab
+cU
 aa
 "}
 (20,1,1) = {"

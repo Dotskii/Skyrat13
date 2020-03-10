@@ -111,8 +111,7 @@
 /turf/closed/indestructible/wood,
 /area/ruin/unpowered/icemoon)
 "z" = (
-/obj/structure/mineral_door/wood,
-/obj/structure/barricade/wooden/snowed,
+/obj/effect/landmark/bridgecreator,
 /turf/open/floor/wood/cold,
 /area/ruin/unpowered/icemoon)
 "A" = (

@@ -181,6 +181,10 @@
 /obj/machinery/door/airlock/freezer,
 /turf/open/floor/plating/asteroid/snow/icemoon,
 /area/ruin/unpowered/icemoon/underground)
+"L" = (
+/obj/effect/landmark/bridgecreator,
+/turf/open/floor/plating/asteroid/snow/icemoon,
+/area/ruin/powered)
 
 (1,1,1) = {"
 a
@@ -324,7 +328,7 @@ n
 n
 n
 K
-a
+L
 "}
 (13,1,1) = {"
 a

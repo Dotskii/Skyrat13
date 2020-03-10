@@ -1118,11 +1118,7 @@
 /turf/closed/wall,
 /area/security/main)
 "acS" = (
-/obj/machinery/door/airlock/external{
-	name = "Security External Airlock";
-	req_access_txt = "63"
-	},
-/obj/effect/mapping_helpers/airlock/cyclelink_helper,
+/obj/effect/landmark/bridgecreator,
 /turf/open/floor/plating,
 /area/maintenance/fore/secondary)
 "acT" = (
@@ -4549,14 +4545,9 @@
 /turf/open/floor/plating,
 /area/maintenance/fore/secondary)
 "ajx" = (
-/obj/machinery/door/airlock/external{
-	req_access_txt = "13"
-	},
-/obj/effect/mapping_helpers/airlock/cyclelink_helper{
-	dir = 8
-	},
+/obj/effect/landmark/bridgecreator,
 /turf/open/floor/plating,
-/area/maintenance/fore/secondary)
+/area/hallway/secondary/entry)
 "ajy" = (
 /obj/item/stack/rods,
 /turf/open/floor/plating/asteroid/snow/icemoon,
@@ -76707,7 +76698,7 @@ aae
 aae
 axt
 ayT
-aAq
+ajx
 ayT
 axt
 aae
@@ -130143,7 +130134,7 @@ abu
 ahC
 ahC
 ahC
-ajx
+acS
 ahC
 ahC
 alr

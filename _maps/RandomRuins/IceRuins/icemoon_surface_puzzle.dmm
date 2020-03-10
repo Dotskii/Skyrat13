@@ -9,6 +9,10 @@
 /obj/effect/sliding_puzzle/lavaland,
 /turf/open/floor/plating/asteroid/snow/icemoon,
 /area/ruin/unpowered/icemoon)
+"d" = (
+/obj/effect/landmark/bridgecreator,
+/turf/open/floor/plating/asteroid/snow/icemoon,
+/area/ruin/unpowered/icemoon)
 
 (1,1,1) = {"
 a
@@ -28,7 +32,7 @@ a
 a
 b
 c
-b
+d
 a
 "}
 (4,1,1) = {"

@@ -45,6 +45,10 @@
 /mob/living/simple_animal/hostile/russian,
 /turf/open/floor/plating/asteroid/snow/icemoon,
 /area/ruin/unpowered/icemoon)
+"m" = (
+/obj/effect/landmark/bridgecreator,
+/turf/open/floor/plating/asteroid/snow/icemoon,
+/area/ruin/unpowered/icemoon)
 
 (1,1,1) = {"
 a
@@ -104,7 +108,7 @@ a
 a
 a
 a
-a
+m
 "}
 (6,1,1) = {"
 b

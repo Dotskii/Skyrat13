@@ -24,6 +24,10 @@
 /obj/structure/sign/poster/contraband/lusty_xenomorph,
 /turf/open/floor/mineral/diamond,
 /area/ruin/unpowered/icemoon)
+"g" = (
+/obj/effect/landmark/bridgecreator,
+/turf/closed/mineral/random/snow/no_caves,
+/area/ruin/unpowered/icemoon)
 
 (1,1,1) = {"
 a
@@ -101,7 +105,7 @@ d
 c
 f
 a
-a
+g
 "}
 (7,1,1) = {"
 a

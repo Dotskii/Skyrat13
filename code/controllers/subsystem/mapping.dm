@@ -99,7 +99,12 @@ SUBSYSTEM_DEF(mapping)
 	if (ice_ruins.len) // needs to be whitelisted for underground too so place_below ruins work
 		seedRuins(ice_ruins, CONFIG_GET(number/icemoon_budget), /area/icemoon/surface/outdoors/unexplored, ice_ruins_templates, "Snow Ruins")
 		for (var/ice_z in ice_ruins)
+			spawn_empty_spaces(ice_z, 4, /turf/open/floor/plating/asteroid/snow, /area/icemoon/surface/outdoors/unexplored)
 			spawn_rivers(ice_z, 4, /turf/open/lava/plasma/ice_moon, /area/icemoon/surface/outdoors/unexplored) //no more buggy open spaces jesus
+		var/list/mappe = list()
+		for(var/z in ice_ruins)
+			mappe += block(locate(1, 1, z), locate(world.maxx, world.maxy, z))
+		spawn_bridges(mappe)
 	var/list/ice_ruins_underground = levels_by_trait(ZTRAIT_ICE_RUINS_UNDERGROUND)
 	if (ice_ruins_underground.len)
 		seedRuins(ice_ruins_underground, CONFIG_GET(number/icemoon_budget), /area/icemoon/underground/unexplored, ice_ruins_underground_templates, "Snow Underground Ruins")

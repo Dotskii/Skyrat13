@@ -61,6 +61,7 @@
 /area/ruin/powered/icemoon)
 "n" = (
 /obj/structure/mineral_door/wood,
+/obj/effect/landmark/bridgecreator,
 /turf/open/floor/wood,
 /area/ruin/powered/icemoon)
 "o" = (

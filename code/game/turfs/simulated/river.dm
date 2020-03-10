@@ -19,7 +19,7 @@
 		else
 			river_nodes += new /obj/effect/landmark/river_waypoint(T)
 			num_spawned++
-	
+
 	safety = 0
 	//make some randomly pathing rivers
 	for(var/A in river_nodes)
@@ -63,12 +63,57 @@
 	for(var/WP in river_nodes)
 		qdel(WP)
 
+/proc/spawn_empty_spaces(target_z, turf_type = /turf/open/floor/plating/asteroid/snow, whitelist_area = /area/icemoon/surface) //currently no idea how the fuck this would work. Leaving here for now.
+	return
+
+
+/proc/spawn_bridges(var/list/L, turf_type = /turf/open/floor/wood, whitelist_area = /area/icemoon/surface)
+	if(!L)
+		return
+	for(var/obj/effect/landmark/bridgecreator/B in L) //we do this thing for every single landmark
+		var/obj/effect/landmark/bridgecreator/first = B
+		var/list/otherlandmarks = list()
+		var/list/all_landmarks = list()
+		for(var/turf/T in L)
+			for(var/obj/effect/landmark/bridgecreator/fuckyou in T)
+				if(fuckyou != B)
+					all_landmarks += fuckyou
+		for(var/obj/effect/landmark/bridgecreator/other in all_landmarks) // i'm not adding checks to see if the landmark is already bridged because it probably won't cause problems. you can write this in my grave.
+			if(other)
+				var/smart = 1 // is it smart to make a bridge on this line?
+				for(var/area/cumzone in getline(first, other))
+					if(!istype(cumzone, whitelist_area)) // you are not welcum
+						smart = 0
+				if(smart)
+					otherlandmarks[other] = get_dist(first, other)
+			else
+				return FALSE //something went wrong, most probably there is only one landmark on the level.
+		var/obj/effect/landmark/bridgecreator/last = min(otherlandmarks)
+		if(last) //confirms that we do have a "smart" bridge and are not fucked
+			var/bridgedir = get_dir(first, last) // we get the direction this dumb thing goes, you'll see why later
+			for(var/turf/T in getline(first, last))
+				if(T.loc != whitelist_area || (first in T.contents) || (last in T.contents)) // fuck we hit a ruin or something (not supposed to happen) this is bad and not very good. Or this is where the landmark is.
+					continue
+				T.TerraformTurf(turf_type, turf_type)
+				var/turf/T2 = get_step(T, turn(bridgedir, 90)) // there it is
+				var/turf/T3 = get_step(T, turn(bridgedir, -90)) // we get the two tiles to it's "left" and "right" and terraform then too. this is needed otherwise diagonal bridges would be just for show.
+				T2.TerraformTurf(turf_type, turf_type)
+				T3.TerraformTurf(turf_type, turf_type)
+		else //we don't have the smartbridge(tm), abort.
+			return
 
 /obj/effect/landmark/river_waypoint
 	name = "river waypoint"
 	var/connected = 0
 	invisibility = INVISIBILITY_ABSTRACT
 
+/obj/effect/landmark/empty_space // empty as in, no minerals
+	name = "empty space"
+	invisibility = INVISIBILITY_ABSTRACT
+
+/obj/effect/landmark/bridgecreator //wayponts for bridges or whatever yeah
+	name = "bridge creator"
+	invisibility = INVISIBILITY_ABSTRACT
 
 /turf/proc/Spread(probability = 30, prob_loss = 25, whitelisted_area)
 	if(probability <= 0)

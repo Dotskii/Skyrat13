@@ -177,6 +177,10 @@
 "F" = (
 /turf/open/lava/plasma/ice_moon,
 /area/ruin/powered/icemoon)
+"G" = (
+/obj/effect/landmark/bridgecreator,
+/turf/open/floor/plating/asteroid/snow/icemoon,
+/area/ruin/powered/icemoon)
 "J" = (
 /turf/template_noop,
 /area/template_noop)
@@ -315,7 +319,7 @@ F
 F
 F
 F
-a
+G
 "}
 (9,1,1) = {"
 a
