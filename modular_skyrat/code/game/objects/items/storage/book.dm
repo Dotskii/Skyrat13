@@ -1,8 +1,6 @@
 /obj/item/storage/book/bible/attack_self(mob/living/carbon/human/H)
 	if(!istype(H))
 		return
-	if(!H.can_read(src))
-		return FALSE
 	// If H is the Chaplain, we can set the icon_state of the bible (but only once!)
 	if(!GLOB.bible_icon_state && (H.mind.holy_role == HOLY_ROLE_HIGHPRIEST || H.job = "Chaplain"))
 		var/dat = "<html><head><meta http-equiv='Content-Type' content='text/html; charset=UTF-8'><title>Pick Bible Style</title></head><body><center><h2>Pick a bible style</h2></center><table>"
