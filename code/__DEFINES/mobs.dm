@@ -275,6 +275,9 @@
 // Roundstart trait system
 
 #define MAX_QUIRKS 6 //The maximum amount of quirks one character can have at roundstart
+//SKYRAT EDIT - secondary languages
+#define MAX_LANGUAGES 1 //The maximum of extra (non-species) language a character can choose
+//
 
 #define MAX_REVIVE_FIRE_DAMAGE 180
 #define MAX_REVIVE_BRUTE_DAMAGE 180

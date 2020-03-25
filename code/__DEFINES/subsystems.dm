@@ -59,6 +59,9 @@
 #define INIT_ORDER_RESEARCH			75
 #define INIT_ORDER_EVENTS			70
 #define INIT_ORDER_JOBS				65
+//skyrat edit penis
+#define INIT_ORDER_LANGUAGES		64
+//
 #define INIT_ORDER_QUIRKS			60
 #define INIT_ORDER_TICKER			55
 #define INIT_ORDER_MAPPING			50

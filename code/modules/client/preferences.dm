@@ -165,6 +165,9 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 	//Quirk list
 	var/list/all_quirks = list()
+	//SKYRAT EDIT - secondary languages
+	var/list/language = list()
+	//SKYRAT END
 
 	//Job preferences 2.0 - indexed by job title , no key or value implies never
 	var/list/job_preferences = list()
@@ -297,6 +300,8 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 			dat += "<b>Gender:</b> <a href='?_src_=prefs;preference=gender'>[gender == MALE ? "Male" : (gender == FEMALE ? "Female" : (gender == PLURAL ? "Non-binary" : "Object"))]</a><BR>"
 			dat += "<b>Age:</b> <a style='display:block;width:30px' href='?_src_=prefs;preference=age;task=input'>[age]</a>"
+			dat += "<b><a href='?_src_=prefs;preference=language;task=menu'>Configure Languages</a></b><br>"
+			dat += "<b>Extra languages:</b> [language.len ? language.Join(", ") : "None"]<BR>"
 			dat += "<b>Auto-Hiss:</b> <a href='?_src_=prefs;preference=auto_hiss'>[auto_hiss ? "Yes" : "No"]</a><BR>"
 
 			dat += "<b>Special Names:</b><BR>"
@@ -1307,6 +1312,58 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 		if(SSquirks.quirk_points[q] > 0)
 			.++
 
+//skyrat edit penis fuck
+/datum/preferences/proc/SetLanguages(mob/user)
+	if(!SSlanguages)
+		to_chat(user, "<span class='danger'>The roundstart languages subsystem is still initializing! Try again in a minute.</span>")
+		return
+
+	var/list/dat = list()
+	if(!SSlanguages.languages.len)
+		dat += "The language subsystem hasn't finished initializing, please hold..."
+		dat += "<center><a href='?_src_=prefs;preference=trait;task=close'>Done</a></center><br>"
+
+	else
+		dat += "<center><b>Choose language setup</b></center><br>"
+		dat += "<center><a href='?_src_=prefs;preference=language;task=close'>Done</a></center>"
+		dat += "<hr>"
+		dat += "<center><b>Current languages:</b> [language.len ? language.Join(", ") : "None"]</center>"
+		dat += "<center>[GetLanguageCount()] / [MAX_LANGUAGES] max extra languages<br>\
+		<b>Language points remaining:</b>[GetLanguageBalance()]</center><br>"
+		for(var/V in SSlanguages.languages)
+			var/datum/language/T = SSlanguages.languages[V]
+			var/language_name = initial(T.name)
+			var/has_language
+			var/language_cost = 1
+			for(var/_V in language)
+				if(_V == language_name)
+					has_language = TRUE
+			if(has_language)
+				language_cost *= -1 //invert it back, since we'd be regaining this amount
+			var/font_color = "#AAAAFF"
+			if(has_language)
+				dat += "<a href='?_src_=prefs;preference=language;task=update;language=[language_name]'>[has_language ? "Remove" : "Take"] ([language_cost] pts.)</a> \
+				<b><font color='[font_color]'>[language_name]</font></b><br>"
+			else
+				dat += "<a href='?_src_=prefs;preference=language;task=update;language=[language_name]'>[has_language ? "Remove" : "Take"] ([language_cost] pts.)</a> \
+				<b><font color='[font_color]'>[language_name]</font></b><br>"
+		dat += "<br><center><a href='?_src_=prefs;preference=language;task=reset'>Reset Languages</a></center>"
+
+	var/datum/browser/popup = new(user, "mob_occupation", "<div align='center'>Language Preferences</div>", 900, 600) //no reason not to reuse the occupation window, as it's cleaner that way
+	popup.set_window_options("can_close=0")
+	popup.set_content(dat.Join())
+	popup.open(FALSE)
+
+/datum/preferences/proc/GetLanguageBalance()
+	var/bal = MAX_LANGUAGES
+	for(var/V in language)
+		bal--
+	return bal
+
+/datum/preferences/proc/GetLanguageCount()
+	return language.len
+//
+
 /datum/preferences/Topic(href, href_list, hsrc)			//yeah, gotta do this I guess..
 	. = ..()
 	if(href_list["close"])
@@ -1399,7 +1456,31 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				SetQuirks(user)
 			else
 				SetQuirks(user)
+	//skyrat penis fuck edit
+	else if(href_list["preference"] == "language")
+		switch(href_list["task"])
+			if("close")
+				user << browse(null, "window=mob_occupation")
+				ShowChoices(user)
+			if("update")
+				var/languagen = href_list["language"]
+				if(!SSlanguages.languages[languagen])
+					return
+				if(languagen in language)
+					language -= languagen
+				else
+					if(GetLanguageCount() >= MAX_LANGUAGES)
+						to_chat(user, "<span class='warning'>You can't have more than [MAX_LANGUAGES] languages!</span>")
+						return
+					language += languagen
+				SetLanguages(user)
+			if("reset")
+				language = list()
+				SetLanguages(user)
+			else
+				SetLanguages(user)
 		return TRUE
+	//
 
 	switch(href_list["task"])
 		if("random")
@@ -2138,7 +2219,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 							damagescreenshake = 1
 				if("nameless")
 					nameless = !nameless
-         
+
 				if("erp_pref")
 					switch(erppref)
 						if("Yes")
