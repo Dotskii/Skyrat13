@@ -29,9 +29,11 @@
 	can_suppress = FALSE
 	unique_reskin = list("Default" = "usp-m",
 						"Stealth" = "stealth",
+						"Baby Glock" = "babyglock",
 						"Glock" = "glock",
 						"Beretta" = "beretta",
-						"M1911" = "1911")
+						"M1911 Classic" = "1911",
+						"M1911 Improved" = "1911i")
 	obj_flags = UNIQUE_RENAME
 
 /obj/item/gun/ballistic/automatic/pistol/uspm/update_icon()
