@@ -1,3 +1,4 @@
+//cross to hang people on
 /datum/crafting_recipe/cross
 	name = "cross (structure)"
 	result = /obj/structure/kitchenspike/cross
