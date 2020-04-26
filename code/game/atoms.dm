@@ -47,8 +47,10 @@
 	var/icon/blood_splatter_icon
 	var/list/fingerprints
 	var/list/fingerprintshidden
+	var/fingerprintslast = null
 	var/list/blood_DNA
 	var/list/suit_fibers
+	var/germ_level = GERM_LEVEL_AMBIENT
 
 /atom/New(loc, ...)
 	//atom creation method that preloads variables at creation

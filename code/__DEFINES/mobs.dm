@@ -291,3 +291,21 @@
 #define PULL_PRONE_SLOWDOWN 0.6
 #define FIREMAN_CARRY_SLOWDOWN 0
 #define PIGGYBACK_CARRY_SLOWDOWN 1
+
+// Organ defines.
+#define ORGAN_BROKEN     1
+#define ORGAN_ROBOT      2
+#define ORGAN_SPLINTED   4
+#define ORGAN_DEAD       8
+#define ORGAN_MUTATED    16
+
+#define PROCESS_ACCURACY 10
+
+#define DROPLIMB_SHARP 0
+#define DROPLIMB_BLUNT 1
+#define DROPLIMB_BURN 2
+
+#define LEFT 1
+#define RIGHT 2
+
+#define SPLINT_LIFE 2000 //number of steps splints stay on

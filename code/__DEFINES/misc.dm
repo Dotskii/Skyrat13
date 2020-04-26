@@ -523,3 +523,14 @@ GLOBAL_LIST_INIT(pda_reskins, list(PDA_SKIN_CLASSIC = 'icons/obj/pda.dmi', PDA_S
 #define NIGHTSHIFT_AREA_NONE				4		//default/highest.
 
 #define UNTIL(X) while(!(X)) stoplag()
+
+////////////GERMS AND INFECTIONS////////////
+#define GERM_LEVEL_AMBIENT		110		//maximum germ level you can reach by standing still
+#define GERM_LEVEL_MOVE_CAP		200		//maximum germ level you can reach by running around
+
+#define INFECTION_LEVEL_ONE		100
+#define INFECTION_LEVEL_TWO		500
+#define INFECTION_LEVEL_THREE	1000
+
+// Damage above this value must be repaired with surgery.
+#define ROBOLIMB_SELF_REPAIR_CAP 60

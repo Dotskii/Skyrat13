@@ -7,7 +7,6 @@
 	var/vital = FALSE
 	w_class = WEIGHT_CLASS_SMALL
 	throwforce = 0
-	var/slot
 	// DO NOT add slots with matching names to different zones - it will break internal_organs_slot list!
 	var/organ_flags = 0
 	var/maxHealth = STANDARD_ORGAN_THRESHOLD
@@ -17,10 +16,25 @@
 	var/max_damage
 	var/organ_tag = "organ"
 	var/zone = BODY_ZONE_CHEST
+	var/slot
 	//Autopsy stuff
 	var/list/datum/autopsy_data/autopsy_data = list()
 	var/list/trace_chemicals = list() // traces of chemicals in the organ,
 									// links chemical IDs to number of ticks for which they'll stay in the blood
+	germ_level = 0
+	var/datum/dna/dna
+
+	// Stuff for tracking if this is on a tile with an open freezer or not
+	var/last_freezer_update_time = 0
+	var/freezer_update_period = 100
+	var/is_in_freezer = 0
+
+	var/sterile = FALSE //can the organ be infected by germs?
+	var/tough = FALSE //can organ be easily damaged?
+	var/emp_proof = FALSE //is the organ immune to EMPs?
+	var/hidden_pain = FALSE //will it skip pain messages?
+	var/requires_robotic_bodypart = FALSE
+
 	///Healing factor and decay factor function on % of maxhealth, and do not work by applying a static number per tick
 	var/healing_factor 	= 0										//fraction of maxhealth healed per on_life(), set to 0 for generic organs
 	var/decay_factor 	= 0										//same as above but when without a living owner, set to 0 for generic organs
@@ -81,8 +95,29 @@
 /obj/item/organ/proc/on_find(mob/living/finder)
 	return
 
-/obj/item/organ/process()	//runs decay when outside of a person AND ONLY WHEN OUTSIDE (i.e. long obj).
-	on_death() //Kinda hate doing it like this, but I really don't want to call process directly.
+/obj/item/organ/process()
+	if(status & ORGAN_DEAD && germ_level >= INFECTION_LEVEL_THREE)
+		return
+	if(is_cold())
+		return
+	if(organ_flags & ORGAN_SYNTHETIC || sterile || (owner && (NO_GERMS in owner.dna.species.species_traits)))
+		return
+	applyOrganDamage(maxHealth * decay_factor)
+	if(!owner)
+		// Maybe scale it down a bit, have it REALLY kick in once past the basic infection threshold
+		// Another mercy for surgeons preparing transplant organs
+		germ_level++
+		if(germ_level >= INFECTION_LEVEL_ONE)
+			germ_level += rand(2,6)
+		if(germ_level >= INFECTION_LEVEL_TWO)
+			germ_level += rand(2,6)
+		if(germ_level >= INFECTION_LEVEL_THREE)
+			necrotize()
+	else if(owner.bodytemperature >= 170) //cryo stops germs from moving and doing their bad stuffs
+		//** Handle antibiotics and curing infections
+		handle_antibiotics()
+		handle_germ_effects()
+	on_death() //runs decay when outside of a person AND ONLY WHEN OUTSIDE (i.e. long obj). //Kinda hate doing it like this, but I really don't want to call process directly.
 
 //Sources; life.dm process_organs
 /obj/item/organ/proc/on_death() //Runs when outside AND inside.
@@ -91,12 +126,23 @@
 //Applys the slow damage over time decay
 /obj/item/organ/proc/decay()
 	if(!can_decay())
-		STOP_PROCESSING(SSobj, src)
 		return
 	is_cold()
 	if(organ_flags & ORGAN_FROZEN)
 		return
+	if(organ_flags & ORGAN_SYNTHETIC || sterile || (owner && (NO_GERMS in owner.dna.species.species_traits)))
+		return
 	applyOrganDamage(maxHealth * decay_factor)
+	if(!owner)
+		// Maybe scale it down a bit, have it REALLY kick in once past the basic infection threshold
+		// Another mercy for surgeons preparing transplant organs
+		germ_level++
+		if(germ_level >= INFECTION_LEVEL_ONE)
+			germ_level += rand(2,6)
+		if(germ_level >= INFECTION_LEVEL_TWO)
+			germ_level += rand(2,6)
+		if(germ_level >= INFECTION_LEVEL_THREE)
+			necrotize()
 
 /obj/item/organ/proc/can_decay()
 	if(CHECK_BITFIELD(organ_flags, ORGAN_NO_SPOIL | ORGAN_SYNTHETIC | ORGAN_FAILING))
@@ -192,11 +238,64 @@
 	START_PROCESSING(SSobj, src)
 
 /obj/item/organ/Destroy()
+	STOP_PROCESSING(SSobj, src)
 	if(owner)
 		// The special flag is important, because otherwise mobs can die
 		// while undergoing transformation into different mobs.
 		Remove(TRUE)
+	QDEL_LIST_ASSOC_VAL(autopsy_data)
+	QDEL_NULL(dna)
 	return ..()
+
+/obj/item/organ/proc/update_health()
+	return
+
+/obj/item/organ/New(mob/living/carbon/holder, datum/species/species_override = null)
+	..(holder)
+	if(!max_damage)
+		max_damage = min_broken_damage * 2
+	if(istype(holder))
+		if(holder.dna)
+			dna = holder.dna.Clone()
+		else
+			log_runtime(EXCEPTION("[holder] spawned without a proper DNA."), holder)
+		var/mob/living/carbon/human/H = holder
+		if(istype(H))
+			if(dna)
+				if(!blood_DNA)
+					blood_DNA = list()
+				blood_DNA[dna.unique_enzymes] = dna.blood_type
+	else
+		dna = new /datum/dna(null)
+		if(species_override)
+			dna.species = new species_override
+
+/obj/item/organ/attackby(obj/item/I, mob/user, params)
+	if((organ_flags & ORGAN_SYNTHETIC || status == ORGAN_ROBOTIC) && istype(I, /obj/item/stack/nanopaste))
+		var/obj/item/stack/nanopaste/nano = I
+		nano.use(1)
+		rejuvenate()
+		to_chat(user, "<span class='notice'>You repair the damage on [src].</span>")
+		return
+	return ..()
+
+/obj/item/organ/proc/set_dna(var/datum/dna/new_dna)
+	if(new_dna)
+		dna = new_dna.Clone()
+		if(blood_DNA)
+			blood_DNA.Cut()
+		else
+			blood_DNA = list()
+		blood_DNA[dna.unique_enzymes] = dna.blood_type
+
+/obj/item/organ/proc/necrotize(update_sprite = TRUE)
+	damage = max_damage
+	status |= ORGAN_DEAD
+	STOP_PROCESSING(SSobj, src)
+	if(dead_icon && !(organ_flags & ORGAN_SYNTHETIC))
+		icon_state = dead_icon
+	if(owner && vital)
+		owner.death()
 
 /obj/item/organ/attack(mob/living/carbon/M, mob/user)
 	if(M == user && ishuman(user))
