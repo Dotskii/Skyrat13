@@ -1,16 +1,26 @@
 /obj/item/organ
 	name = "organ"
 	icon = 'icons/obj/surgery.dmi'
+	var/dead_icon
 	var/mob/living/carbon/owner = null
 	var/status = ORGAN_ORGANIC
+	var/vital = FALSE
 	w_class = WEIGHT_CLASS_SMALL
 	throwforce = 0
-	var/zone = BODY_ZONE_CHEST
 	var/slot
 	// DO NOT add slots with matching names to different zones - it will break internal_organs_slot list!
 	var/organ_flags = 0
 	var/maxHealth = STANDARD_ORGAN_THRESHOLD
 	var/damage = 0		//total damage this organ has sustained
+	var/min_bruised_damage = 10
+	var/min_broken_damage = 30
+	var/max_damage
+	var/organ_tag = "organ"
+	var/zone = BODY_ZONE_CHEST
+	//Autopsy stuff
+	var/list/datum/autopsy_data/autopsy_data = list()
+	var/list/trace_chemicals = list() // traces of chemicals in the organ,
+									// links chemical IDs to number of ticks for which they'll stay in the blood
 	///Healing factor and decay factor function on % of maxhealth, and do not work by applying a static number per tick
 	var/healing_factor 	= 0										//fraction of maxhealth healed per on_life(), set to 0 for generic organs
 	var/decay_factor 	= 0										//same as above but when without a living owner, set to 0 for generic organs
