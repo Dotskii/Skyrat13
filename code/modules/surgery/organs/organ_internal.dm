@@ -3,7 +3,7 @@
 	icon = 'icons/obj/surgery.dmi'
 	var/dead_icon
 	var/mob/living/carbon/owner = null
-	var/status = ORGAN_ORGANIC
+	var/state = ORGAN_ORGANIC //Organic or robotic?
 	var/vital = FALSE
 	w_class = WEIGHT_CLASS_SMALL
 	throwforce = 0
@@ -17,6 +17,7 @@
 	var/organ_tag = "organ"
 	var/zone = BODY_ZONE_CHEST
 	var/slot
+	var/status = 0 //Broken, dead, splinted, etc
 	//Autopsy stuff
 	var/list/datum/autopsy_data/autopsy_data = list()
 	var/list/trace_chemicals = list() // traces of chemicals in the organ,
@@ -96,7 +97,7 @@
 	return
 
 /obj/item/organ/process()
-	if(status & ORGAN_DEAD && germ_level >= INFECTION_LEVEL_THREE)
+	if(status & ORGAN_DEAD && damage >= maxHealth)
 		return
 	if(is_cold())
 		return
@@ -118,6 +119,93 @@
 		handle_antibiotics()
 		handle_germ_effects()
 	on_death() //runs decay when outside of a person AND ONLY WHEN OUTSIDE (i.e. long obj). //Kinda hate doing it like this, but I really don't want to call process directly.
+
+/obj/item/organ/proc/handle_germ_effects()
+	//** Handle the effects of infections
+	var/antibiotics = owner.reagents.get_reagent_amount("spaceacillin")
+
+	if(germ_level > 0 && germ_level < INFECTION_LEVEL_ONE/2 && prob(30))
+		germ_level--
+
+	if(germ_level >= INFECTION_LEVEL_ONE/2)
+		//aiming for germ level to go from ambient to INFECTION_LEVEL_TWO in an average of 15 minutes
+		if(antibiotics < 5 && prob(round(germ_level/6)))
+			germ_level++
+
+	if(germ_level >= INFECTION_LEVEL_ONE)
+		var/fever_temperature = (owner.dna.species.heat_level_1 - owner.dna.species.body_temperature - 5)* min(germ_level/INFECTION_LEVEL_TWO, 1) + owner.dna.species.body_temperature
+		owner.bodytemperature += between(0, (fever_temperature - T20C)/BODYTEMP_COLD_DIVISOR + 1, fever_temperature - owner.bodytemperature)
+
+	if(germ_level >= INFECTION_LEVEL_TWO)
+		var/obj/item/organ/external/parent = owner.get_organ(parent_organ)
+		//spread germs
+		if(antibiotics < 5 && parent.germ_level < germ_level && ( parent.germ_level < INFECTION_LEVEL_ONE*2 || prob(30) ))
+			parent.germ_level++
+	if(germ_level >= INFECTION_LEVEL_TWO)
+		if(prob(3))	//about once every 30 seconds
+			receive_damage(1,silent=prob(30))
+
+/obj/item/organ/proc/receive_damage(amount, silent = 0)
+	if(tough)
+		return
+	damage = between(0, damage + amount, max_damage)
+
+	//only show this if the organ is not robotic
+	if(owner && parent_organ && amount > 0)
+		var/obj/item/organ/external/parent = owner.get_organ(parent_organ)
+		if(parent && !silent)
+			owner.custom_pain("Something inside your [parent.name] hurts a lot.")
+
+		//check if we've hit max_damage
+	if(damage >= max_damage)
+		necrotize()
+
+/obj/item/organ/proc/rejuvenate()
+	damage = 0
+	germ_level = 0
+	surgeryize()
+	if(is_robotic())	//Robotic organs stay robotic.
+		status = ORGAN_ROBOT
+	else
+		status = 0
+	if(!owner)
+		START_PROCESSING(SSobj, src)
+
+/obj/item/organ/proc/is_damaged()
+	return damage > 0
+
+/obj/item/organ/proc/is_bruised()
+	return damage >= min_bruised_damage
+
+/obj/item/organ/proc/is_broken()
+	return (damage >= min_broken_damage || ((status & ORGAN_BROKEN) && !(status & ORGAN_SPLINTED)))
+
+//Germs
+/obj/item/organ/proc/handle_antibiotics()
+	var/antibiotics = owner.reagents.get_reagent_amount("spaceacillin")
+
+	if(!germ_level || antibiotics <= 0.4)
+		return
+
+	if(germ_level < INFECTION_LEVEL_ONE)
+		germ_level = 0	//cure instantly
+	else if(germ_level < INFECTION_LEVEL_TWO)
+		germ_level -= 24	//at germ_level == 500, this should cure the infection in 15 seconds
+	else
+		germ_level -= 8	// at germ_level == 1000, this will cure the infection in 1 minute, 15 seconds
+						// Let's not drag this on, medbay has only so much antibiotics
+
+//Adds autopsy data for used_weapon.
+/obj/item/organ/proc/add_autopsy_data(var/used_weapon = "Unknown", var/damage)
+	var/datum/autopsy_data/W = autopsy_data[used_weapon]
+	if(!W)
+		W = new()
+		W.weapon = used_weapon
+		autopsy_data[used_weapon] = W
+
+	W.hits += 1
+	W.damage += damage
+	W.time_inflicted = world.time
 
 //Sources; life.dm process_organs
 /obj/item/organ/proc/on_death() //Runs when outside AND inside.
@@ -206,7 +294,7 @@
 /obj/item/organ/examine(mob/user)
 	. = ..()
 	if(organ_flags & ORGAN_FAILING)
-		if(status == ORGAN_ROBOTIC)
+		if(state == ORGAN_ROBOTIC)
 			. += "<span class='warning'>[src] seems to be broken!</span>"
 			return
 		. += "<span class='warning'>[src] has decayed for too long, and has turned a sickly color! It doesn't look like it will work anymore!</span>"
@@ -271,7 +359,7 @@
 			dna.species = new species_override
 
 /obj/item/organ/attackby(obj/item/I, mob/user, params)
-	if((organ_flags & ORGAN_SYNTHETIC || status == ORGAN_ROBOTIC) && istype(I, /obj/item/stack/nanopaste))
+	if((organ_flags & ORGAN_SYNTHETIC || state == ORGAN_ROBOTIC) && istype(I, /obj/item/stack/nanopaste))
 		var/obj/item/stack/nanopaste/nano = I
 		nano.use(1)
 		rejuvenate()
@@ -300,7 +388,7 @@
 /obj/item/organ/attack(mob/living/carbon/M, mob/user)
 	if(M == user && ishuman(user))
 		var/mob/living/carbon/human/H = user
-		if(status == ORGAN_ORGANIC)
+		if(state == ORGAN_ORGANIC)
 			var/obj/item/reagent_containers/food/snacks/S = prepare_eat()
 			if(S)
 				qdel(src)
