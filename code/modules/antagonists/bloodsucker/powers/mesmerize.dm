@@ -139,6 +139,9 @@
 		REMOVE_TRAIT(target, TRAIT_COMBAT_MODE_LOCKED, src)
 		if(istype(L) && target.stat == CONSCIOUS && (target in view(10, get_turf(L)))) // They Woke Up! (Notice if within view)
 			to_chat(L, "<span class='warning'>[target] has snapped out of their trance.</span>")
+	//SKYRAT CHANGE - fix permanent mesmerize combat mode lock
+	REMOVE_TRAIT(target, TRAIT_COMBAT_MODE_LOCKED, src)
+	//
 
 
 /datum/action/bloodsucker/targeted/mesmerize/ContinueActive(mob/living/user, mob/living/target)
