@@ -11,7 +11,7 @@
 	melee_energy_drain = 7
 	fast_pressure_step_in = 2
 	slow_pressure_step_in = 2
-	max_temperature = 80000
+	max_temperature = 80000 //NOTHING BURNS BRIGHTER THAN PURE HATRED.
 	max_integrity = 275
 	resistance_flags = LAVA_PROOF | FIRE_PROOF | ACID_PROOF
 	lights_power = 7
@@ -19,18 +19,5 @@
 	max_equip = 4
 	wreckage = /obj/structure/mecha_wreckage/ripley/firefighter/killdozer
 	cargo_capacity = 20
-
-/obj/mecha/working/ripley/firefighter/killdozer/Initialize()
-	. = ..()
-	var/obj/item/mecha_parts/mecha_equipment/weapon/ballistic/killdozer/P = new
-	var/obj/item/mecha_parts/mecha_equipment/hydraulic_clamp/kill/real/killdozer/C = new
-	var/obj/item/mecha_parts/mecha_equipment/drill/killdozer/D = new
-	P.attach(src)
-	C.attach(src)
-	D.attach(src)
-
-/obj/structure/mecha_wreckage/ripley/firefighter/killdozer
-	name = "\improper killdozer wreckage"
-	desc = "Died doing what they loved."
-	icon = 'modular_skyrat/icons/mecha/sometimesreasonablemenmustdounreasonablethings.dmi'
-	icon_state = "ripley-broken"
+	schut = TRUE
+	smashcooldown = 6 //you can still cause a lotta damage with this
