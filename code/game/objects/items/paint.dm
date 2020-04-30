@@ -44,7 +44,7 @@
 	paint_color = "333333"
 	icon_state = "paint_black"
 	desc = "DROP THE CURTAINS SOAKED IN SHADOW<br>\
-			MORE SHADE"
+			MORE SHADE" //SKYRAT CHANGE - Objectively better black paint description
 
 /obj/item/paint/white
 	name = "white paint"
@@ -114,7 +114,7 @@
 	. = ..()
 	if(!proximity)
 		return
-	if(!(isturf(target) || isobj(target)))
+	if(!(isturf(target) || isobj(target))) //SKYRAT CHANGE - paint remover now actually removes paint
 		return
 	if(target.color != initial(target.color))
 		target.remove_atom_colour(WASHABLE_COLOUR_PRIORITY)
