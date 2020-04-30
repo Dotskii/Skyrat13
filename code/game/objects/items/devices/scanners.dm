@@ -181,8 +181,61 @@ SLIME SCANNER
 				dmgreport += "<tr><td><font color='#0000CC'>[capitalize(org.name)]:</font></td>\
 								<td><font color='red'>[(org.brute_dam > 0) ? "[org.brute_dam]" : "0"]</font></td>\
 								<td><font color='orange'>[(org.burn_dam > 0) ? "[org.burn_dam]" : "0"]</font></td></tr>"
-			dmgreport += "</table>"
-			to_chat(user, dmgreport.Join())
+			dmgreport += "</table><br>"
+		var/list/currentbodyparts = C.bodyparts
+		var/list/missingbodyfarts = C.get_missing_limbs()
+		var/list/missingbodyparts = list()
+		for(var/x in missingbodyfarts)
+			if(!(C.get_bodypart(x)))
+				switch(x)
+					if(BODY_ZONE_HEAD)
+						missingbodyparts += "Head"
+					if(BODY_ZONE_CHEST)
+						missingbodyparts += "Chest"
+					if(BODY_ZONE_PRECISE_GROIN)
+						missingbodyparts += "Groin"
+					if(BODY_ZONE_R_ARM)
+						missingbodyparts += "Right arm"
+					if(BODY_ZONE_L_ARM)
+						missingbodyparts += "Left arm"
+					if(BODY_ZONE_PRECISE_R_HAND)
+						missingbodyparts += "Right hand"
+					if(BODY_ZONE_PRECISE_L_HAND)
+						missingbodyparts += "Left hand"
+					if(BODY_ZONE_R_LEG)
+						missingbodyparts += "Right leg"
+					if(BODY_ZONE_L_LEG)
+						missingbodyparts += "Left leg"
+					if(BODY_ZONE_PRECISE_R_FOOT)
+						missingbodyparts += "Right foot"
+					if(BODY_ZONE_PRECISE_L_FOOT)
+						missingbodyparts += "Left foot"
+			else
+				continue
+		if(advanced)
+			for(var/obj/item/bodypart/BP in currentbodyparts)
+				if(BP.status_flags & BODYPART_BROKEN)
+					dmgreport += "\n\t[capitalize(BP.name)] fractures: [BP.status_flags & BODYPART_BROKEN ? "<font color='red'><b>FRACTURES DETECTED</b></font><br>" : "<font color='green'>NO FRACTURES DETECTED</font><br>"]"
+				if(BP.internal_bleeding)
+					dmgreport += "\n\t[capitalize(BP.name)] bloodloss: [BP.internal_bleeding ? "<font color='red'><b>INTERNAL BLEEDING</b></font><br>" : "<font color='green'>NO MAJOR BLEEDING DETECTED</font><br>"]"
+			for(var/missing in missingbodyparts)
+				dmgreport += "\n\t[capitalize(missing)]: <font color='red'><b>MISSING</b></font><br>"
+		else
+			var/hasfractures
+			var/hasbleeding
+			var/hasmissingbodyparts = missingbodyparts.len ? TRUE : FALSE
+			for(var/obj/item/bodypart/BP in currentbodyparts)
+				if(BP.status_flags & BODYPART_BROKEN)
+					hasfractures = TRUE
+				if(BP.internal_bleeding)
+					hasbleeding = TRUE
+			if(hasfractures)
+				dmgreport += "\n\t<font color='red'><b>FRACTURES DETECTED IN SUBJECT</b></font><br>"
+			if(hasbleeding)
+				dmgreport += "\n\t<font color='red'><b>INTERNAL BLEEDING DETECTED IN SUBJECT</b></font><br>"
+			if(hasmissingbodyparts)
+				dmgreport += "\n\t<font color='red'><b>SUBJECT HAS MISSING LIMBS</b></font><br>"
+		to_chat(user, dmgreport.Join())
 
 
 	//Organ damages report

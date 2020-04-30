@@ -13,13 +13,37 @@
 /obj/item/bodypart/l_arm/robot
 	name = "cyborg left arm"
 	desc = "A skeletal limb wrapped in pseudomuscles, with a low-conductivity case."
+	attack_verb = list("slapped")
+	item_state = "buildpipe"
+	icon = 'icons/mob/augmentation/augments.dmi'
+	flags_1 = CONDUCT_1
+	icon_state = "borg_l_arm"
+	status = BODYPART_ROBOTIC
+	starting_children = list(/obj/item/bodypart/l_arm/l_hand/robot)
+	roboticFunnyVariable = 0.8
+
+	brute_reduction = 2
+	burn_reduction = 1
+
+	light_brute_msg = ROBOTIC_LIGHT_BRUTE_MSG
+	medium_brute_msg = ROBOTIC_MEDIUM_BRUTE_MSG
+	heavy_brute_msg = ROBOTIC_HEAVY_BRUTE_MSG
+
+	light_burn_msg = ROBOTIC_LIGHT_BURN_MSG
+	medium_burn_msg = ROBOTIC_MEDIUM_BURN_MSG
+	heavy_burn_msg = ROBOTIC_HEAVY_BURN_MSG
+
+/obj/item/bodypart/l_arm/l_hand/robot
+	name = "cyborg left hand"
+	desc = "A skeletal limb wrapped in pseudomuscles, with a low-conductivity case."
 	attack_verb = list("slapped", "punched")
 	item_state = "buildpipe"
 	icon = 'icons/mob/augmentation/augments.dmi'
 	flags_1 = CONDUCT_1
 	icon_state = "borg_l_arm"
 	status = BODYPART_ROBOTIC
-	
+	roboticFunnyVariable = 0.9
+
 	brute_reduction = 2
 	burn_reduction = 1
 
@@ -40,7 +64,31 @@
 	flags_1 = CONDUCT_1
 	icon_state = "borg_r_arm"
 	status = BODYPART_ROBOTIC
-	
+	starting_children = list(/obj/item/bodypart/r_arm/r_hand/robot)
+	roboticFunnyVariable = 0.8
+
+	brute_reduction = 2
+	burn_reduction = 1
+
+	light_brute_msg = ROBOTIC_LIGHT_BRUTE_MSG
+	medium_brute_msg = ROBOTIC_MEDIUM_BRUTE_MSG
+	heavy_brute_msg = ROBOTIC_HEAVY_BRUTE_MSG
+
+	light_burn_msg = ROBOTIC_LIGHT_BURN_MSG
+	medium_burn_msg = ROBOTIC_MEDIUM_BURN_MSG
+	heavy_burn_msg = ROBOTIC_HEAVY_BURN_MSG
+
+/obj/item/bodypart/r_arm/r_hand/robot
+	name = "cyborg right arm"
+	desc = "A skeletal limb wrapped in pseudomuscles, with a low-conductivity case."
+	attack_verb = list("slapped", "punched")
+	item_state = "buildpipe"
+	icon = 'icons/mob/augmentation/augments.dmi'
+	flags_1 = CONDUCT_1
+	icon_state = "borg_r_arm"
+	status = BODYPART_ROBOTIC
+	roboticFunnyVariable = 0.9
+
 	brute_reduction = 2
 	burn_reduction = 1
 
@@ -55,13 +103,38 @@
 /obj/item/bodypart/l_leg/robot
 	name = "cyborg left leg"
 	desc = "A skeletal limb wrapped in pseudomuscles, with a low-conductivity case."
+	attack_verb = list("slapped")
+	item_state = "buildpipe"
+	icon = 'icons/mob/augmentation/augments.dmi'
+	flags_1 = CONDUCT_1
+	icon_state = "borg_l_leg"
+	status = BODYPART_ROBOTIC
+	starting_children = list(/obj/item/bodypart/l_leg/l_foot/robot)
+	roboticFunnyVariable = 0.8
+
+	brute_reduction = 2
+	burn_reduction = 1
+
+	light_brute_msg = ROBOTIC_LIGHT_BRUTE_MSG
+	medium_brute_msg = ROBOTIC_MEDIUM_BRUTE_MSG
+	heavy_brute_msg = ROBOTIC_HEAVY_BRUTE_MSG
+
+	light_burn_msg = ROBOTIC_LIGHT_BURN_MSG
+	medium_burn_msg = ROBOTIC_MEDIUM_BURN_MSG
+	heavy_burn_msg = ROBOTIC_HEAVY_BURN_MSG
+
+/obj/item/bodypart/l_leg/l_foot/robot
+	name = "cyborg left foot"
+	desc = "A skeletal limb wrapped in pseudomuscles, with a low-conductivity case."
 	attack_verb = list("kicked", "stomped")
 	item_state = "buildpipe"
 	icon = 'icons/mob/augmentation/augments.dmi'
 	flags_1 = CONDUCT_1
 	icon_state = "borg_l_leg"
 	status = BODYPART_ROBOTIC
-	
+	starting_children = list(/obj/item/bodypart/l_leg/l_foot/robot)
+	roboticFunnyVariable = 0.9
+
 	brute_reduction = 2
 	burn_reduction = 1
 
@@ -82,7 +155,31 @@
 	flags_1 = CONDUCT_1
 	icon_state = "borg_r_leg"
 	status = BODYPART_ROBOTIC
-	
+	starting_children = list(/obj/item/bodypart/r_leg/r_foot/robot)
+	roboticFunnyVariable = 0.8
+
+	brute_reduction = 2
+	burn_reduction = 1
+
+	light_brute_msg = ROBOTIC_LIGHT_BRUTE_MSG
+	medium_brute_msg = ROBOTIC_MEDIUM_BRUTE_MSG
+	heavy_brute_msg = ROBOTIC_HEAVY_BRUTE_MSG
+
+	light_burn_msg = ROBOTIC_LIGHT_BURN_MSG
+	medium_burn_msg = ROBOTIC_MEDIUM_BURN_MSG
+	heavy_burn_msg = ROBOTIC_HEAVY_BURN_MSG
+
+/obj/item/bodypart/r_leg/r_foot/robot
+	name = "cyborg right foot"
+	desc = "A skeletal limb wrapped in pseudomuscles, with a low-conductivity case."
+	attack_verb = list("kicked", "stomped")
+	item_state = "buildpipe"
+	icon = 'icons/mob/augmentation/augments.dmi'
+	flags_1 = CONDUCT_1
+	icon_state = "borg_r_leg"
+	status = BODYPART_ROBOTIC
+	roboticFunnyVariable = 0.9
+
 	brute_reduction = 2
 	burn_reduction = 1
 
@@ -102,7 +199,33 @@
 	flags_1 = CONDUCT_1
 	icon_state = "borg_chest"
 	status = BODYPART_ROBOTIC
-	
+	starting_children = list(/obj/item/bodypart/chest/groin/robot)
+	roboticFunnyVariable = 0.85
+
+	brute_reduction = 2
+	burn_reduction = 1
+
+	light_brute_msg = ROBOTIC_LIGHT_BRUTE_MSG
+	medium_brute_msg = ROBOTIC_MEDIUM_BRUTE_MSG
+	heavy_brute_msg = ROBOTIC_HEAVY_BRUTE_MSG
+
+	light_burn_msg = ROBOTIC_LIGHT_BURN_MSG
+	medium_burn_msg = ROBOTIC_MEDIUM_BURN_MSG
+	heavy_burn_msg = ROBOTIC_HEAVY_BURN_MSG
+
+	var/wired = 0
+	var/obj/item/stock_parts/cell/cell = null
+
+/obj/item/bodypart/chest/groin/robot
+	name = "cyborg groin"
+	desc = "A heavily reinforced case containing cyborg logic boards, with space for a standard power cell."
+	item_state = "buildpipe"
+	icon = 'icons/mob/augmentation/augments.dmi'
+	flags_1 = CONDUCT_1
+	icon_state = "borg_chest"
+	status = BODYPART_ROBOTIC
+	roboticFunnyVariable = 0.9
+
 	brute_reduction = 2
 	burn_reduction = 1
 
@@ -164,7 +287,8 @@
 	flags_1 = CONDUCT_1
 	icon_state = "borg_head"
 	status = BODYPART_ROBOTIC
-	
+	roboticFunnyVariable = 0.8
+
 	brute_reduction = 5
 	burn_reduction = 4
 
@@ -242,7 +366,18 @@
 	icon = 'icons/mob/augmentation/surplus_augments.dmi'
 	brute_reduction = 0
 	burn_reduction = 0
-	max_damage = 20
+	max_damage = 25
+	starting_children = list(/obj/item/bodypart/l_arm/l_hand/robot/surplus)
+	roboticFunnyVariable = 0.8
+
+/obj/item/bodypart/l_arm/l_hand/robot/surplus
+	name = "surplus prosthetic left hand"
+	desc = "A skeletal, robotic limb. Outdated and fragile, but it's still better than nothing."
+	icon = 'icons/mob/augmentation/surplus_augments.dmi'
+	brute_reduction = 0
+	burn_reduction = 0
+	max_damage = 15
+	roboticFunnyVariable = 0.8
 
 /obj/item/bodypart/r_arm/robot/surplus
 	name = "surplus prosthetic right arm"
@@ -250,7 +385,18 @@
 	icon = 'icons/mob/augmentation/surplus_augments.dmi'
 	brute_reduction = 0
 	burn_reduction = 0
-	max_damage = 20
+	max_damage = 25
+	starting_children = list(/obj/item/bodypart/r_arm/r_hand/robot/surplus)
+	roboticFunnyVariable = 0.8
+
+/obj/item/bodypart/r_arm/r_hand/robot/surplus
+	name = "surplus prosthetic right hand"
+	desc = "A skeletal, robotic limb. Outdated and fragile, but it's still better than nothing."
+	icon = 'icons/mob/augmentation/surplus_augments.dmi'
+	brute_reduction = 0
+	burn_reduction = 0
+	max_damage = 15
+	roboticFunnyVariable = 0.8
 
 /obj/item/bodypart/l_leg/robot/surplus
 	name = "surplus prosthetic left leg"
@@ -258,7 +404,18 @@
 	icon = 'icons/mob/augmentation/surplus_augments.dmi'
 	brute_reduction = 0
 	burn_reduction = 0
-	max_damage = 20
+	max_damage = 25
+	starting_children = list(/obj/item/bodypart/l_leg/l_foot/robot/surplus)
+	roboticFunnyVariable = 0.8
+
+/obj/item/bodypart/l_leg/l_foot/robot/surplus
+	name = "surplus prosthetic left foot"
+	desc = "A skeletal, robotic limb. Outdated and fragile, but it's still better than nothing."
+	icon = 'icons/mob/augmentation/surplus_augments.dmi'
+	brute_reduction = 0
+	burn_reduction = 0
+	max_damage = 15
+	roboticFunnyVariable = 0.8
 
 /obj/item/bodypart/r_leg/robot/surplus
 	name = "surplus prosthetic right leg"
@@ -266,16 +423,38 @@
 	icon = 'icons/mob/augmentation/surplus_augments.dmi'
 	brute_reduction = 0
 	burn_reduction = 0
-	max_damage = 20
+	max_damage = 25
+	starting_children = list(/obj/item/bodypart/r_leg/r_foot/robot/surplus)
+	roboticFunnyVariable = 0.8
 
-// Upgraded Surplus lims - Better then robotic lims
+/obj/item/bodypart/r_leg/r_foot/robot/surplus
+	name = "surplus prosthetic right foot"
+	desc = "A skeletal, robotic limb. Outdated and fragile, but it's still better than nothing."
+	icon = 'icons/mob/augmentation/surplus_augments.dmi'
+	brute_reduction = 0
+	burn_reduction = 0
+	max_damage = 25
+	roboticFunnyVariable = 0.8
+
+// Upgraded Surplus limbs - Better then robotic limbs
 /obj/item/bodypart/l_arm/robot/surplus_upgraded
 	name = "reinforced surplus prosthetic left arm"
 	desc = "A skeletal, robotic limb. This one is reinforced to provide better protection, and is made of stronger parts."
 	icon = 'icons/mob/augmentation/surplus_augments.dmi'
 	brute_reduction = 3
 	burn_reduction = 2
-	max_damage = 55
+	max_damage = 60
+	starting_children = list(/obj/item/bodypart/l_arm/l_hand/robot/surplus_upgraded)
+	roboticFunnyVariable = 0.9
+
+/obj/item/bodypart/l_arm/l_hand/robot/surplus_upgraded
+	name = "reinforced surplus prosthetic left hand"
+	desc = "A skeletal, robotic limb. This one is reinforced to provide better protection, and is made of stronger parts."
+	icon = 'icons/mob/augmentation/surplus_augments.dmi'
+	brute_reduction = 3
+	burn_reduction = 2
+	max_damage = 35
+	roboticFunnyVariable = 0.9
 
 /obj/item/bodypart/r_arm/robot/surplus_upgraded
 	name = "reinforced surplus prosthetic right arm"
@@ -283,7 +462,18 @@
 	icon = 'icons/mob/augmentation/surplus_augments.dmi'
 	brute_reduction = 3
 	burn_reduction = 2
-	max_damage = 55
+	max_damage = 60
+	starting_children = list(/obj/item/bodypart/r_arm/r_hand/robot/surplus_upgraded)
+	roboticFunnyVariable = 0.9
+
+/obj/item/bodypart/r_arm/r_hand/robot/surplus_upgraded
+	name = "reinforced surplus prosthetic right hand"
+	desc = "A skeletal, robotic limb. This one is reinforced to provide better protection, and is made of stronger parts."
+	icon = 'icons/mob/augmentation/surplus_augments.dmi'
+	brute_reduction = 3
+	burn_reduction = 2
+	max_damage = 35
+	roboticFunnyVariable = 0.9
 
 /obj/item/bodypart/l_leg/robot/surplus_upgraded
 	name = "reinforced surplus prosthetic left leg"
@@ -291,7 +481,18 @@
 	icon = 'icons/mob/augmentation/surplus_augments.dmi'
 	brute_reduction = 3
 	burn_reduction = 2
-	max_damage = 55
+	max_damage = 60
+	starting_children = list(/obj/item/bodypart/l_leg/l_foot/robot/surplus_upgraded)
+	roboticFunnyVariable = 0.9
+
+/obj/item/bodypart/l_leg/l_foot/robot/surplus_upgraded
+	name = "reinforced surplus prosthetic left foot"
+	desc = "A skeletal, robotic limb. This one is reinforced to provide better protection, and is made of stronger parts."
+	icon = 'icons/mob/augmentation/surplus_augments.dmi'
+	brute_reduction = 3
+	burn_reduction = 2
+	max_damage = 35
+	roboticFunnyVariable = 0.9
 
 /obj/item/bodypart/r_leg/robot/surplus_upgraded
 	name = "reinforced surplus prosthetic right leg"
@@ -299,7 +500,19 @@
 	icon = 'icons/mob/augmentation/surplus_augments.dmi'
 	brute_reduction = 3
 	burn_reduction = 2
-	max_damage = 55
+	max_damage = 60
+	starting_children = list(/obj/item/bodypart/r_leg/r_foot/robot/surplus_upgraded)
+	roboticFunnyVariable = 0.9
+
+
+/obj/item/bodypart/r_leg/r_foot/robot/surplus_upgraded
+	name = "reinforced surplus prosthetic right foot"
+	desc = "A skeletal, robotic limb. This one is reinforced to provide better protection, and is made of stronger parts."
+	icon = 'icons/mob/augmentation/surplus_augments.dmi'
+	brute_reduction = 3
+	burn_reduction = 2
+	max_damage = 35
+	roboticFunnyVariable = 0.9
 
 #undef ROBOTIC_LIGHT_BRUTE_MSG
 #undef ROBOTIC_MEDIUM_BRUTE_MSG

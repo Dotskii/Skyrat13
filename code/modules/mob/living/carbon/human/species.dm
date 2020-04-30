@@ -1083,6 +1083,8 @@ GLOBAL_LIST_EMPTY(roundstart_race_names)
 
 	var/num_arms = H.get_num_arms(FALSE)
 	var/num_legs = H.get_num_legs(FALSE)
+	var/num_hands = H.get_num_hands(FALSE)
+	var/num_feet = H.get_num_feet(FALSE)
 
 	switch(slot)
 		if(SLOT_HANDS)
@@ -1120,7 +1122,7 @@ GLOBAL_LIST_EMPTY(roundstart_race_names)
 				return FALSE
 			if( !(I.slot_flags & ITEM_SLOT_GLOVES) )
 				return FALSE
-			if(num_arms < 2)
+			if(num_hands < 2)
 				return FALSE
 			return equip_delay_self_check(I, H, bypass_equip_delay_self)
 		if(SLOT_SHOES)
@@ -1128,7 +1130,7 @@ GLOBAL_LIST_EMPTY(roundstart_race_names)
 				return FALSE
 			if( !(I.slot_flags & ITEM_SLOT_FEET) )
 				return FALSE
-			if(num_legs < 2)
+			if(num_feet < 2)
 				return FALSE
 			if(DIGITIGRADE in species_traits)
 				if(!is_species(H, /datum/species/lizard/ashwalker))

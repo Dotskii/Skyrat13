@@ -60,7 +60,7 @@
 	name = "Motherbase Shipment"
 	desc = "A kit containing the essentials for any 'big boss'. Contains a tactical turtleneck, thermal eyepatch, sneaking boots and a robotic CQC arm implanter."
 	item = /obj/item/storage/box/syndie_kit/snake
-	cost = 20
+	cost = 13
 	exclude_modes = list(/datum/game_mode/nuclear, /datum/game_mode/nuclear/clown_ops)
 
 /obj/item/storage/box/syndie_kit/snake
@@ -71,8 +71,9 @@
 	new /obj/item/clothing/glasses/thermal/eyepatch(src)
 	new /obj/item/clothing/under/syndicate(src)
 	new /obj/item/clothing/shoes/combat/sneakboots/snake(src) //HNNNG COLONEL, I'M TRYING TO SNEAK AROUND-
-	new /obj/item/limbsurgeon/martialarm(src)
+	new /obj/item/clothing/accessory/padding(src)
 	new /obj/item/encryptionkey/syndicate(src)
+	new /obj/item/limbsurgeon/martialarm(src)
 
 /obj/item/limbsurgeon //autosurgeon is shit and does not support limbs, i had to do it to 'em
 	name = "limb autosurgeon"
@@ -125,7 +126,21 @@
 	var/datum/martial_art/ourmartial = /datum/martial_art/cqc
 	var/martialid = "bigboss"
 	name = "punished left arm"
+	icon = 'modular_skyrat/icons/mob/venomsnakearm.dmi'
+	base_bp_icon = 'modular_skyrat/icons/mob/venomsnakearm.dmi'
+	icon_state = "l_arm"
 	desc = "Has no markings of any kind, because that would offer no tactical advantages. But it's distinctly a syndicate item, somehow."
+	starting_children = list(/obj/item/bodypart/l_arm/l_hand/robot/martial)
+	roboticFunnyVariable = 0.9
+
+/obj/item/bodypart/l_arm/l_hand/robot/martial
+	name = "punished left hand"
+	icon = 'modular_skyrat/icons/mob/venomsnakearm.dmi'
+	base_bp_icon = 'modular_skyrat/icons/mob/venomsnakearm.dmi'
+	aux_icons = list(BODY_ZONE_PRECISE_L_HAND = HANDS_PART_LAYER)
+	icon_state = "l_hand"
+	desc = "Why are we still here? Just to suffer?"
+	roboticFunnyVariable = 0.9
 
 /* Though i wanted it to be "only works as long as the arm works", byond hates me and this proc failed me. Instead i'll have to do another approach.
 /obj/item/bodypart/l_arm/robot/martial/update_limb(dropping_limb, mob/living/carbon/source) //this is probably not the best way to do it, but i want to make sure that it always checks if the limb is viable. if not viable, owner loses the martial art.

@@ -76,22 +76,64 @@
 	if(organ_spilled)
 		C.visible_message("<span class='danger'><B>[C]'s internal organs spill out onto the floor!</B></span>")
 
+/obj/item/bodypart/chest/groin/dismember()
+	if(!owner)
+		return FALSE
+	var/mob/living/carbon/C = owner
+	if(!dismemberable)
+		return FALSE
+	if(HAS_TRAIT(C, TRAIT_NODISMEMBER))
+		return FALSE
+	. = list()
+	var/organ_spilled = 0
+	var/turf/T = get_turf(C)
+	C.bleed(50)
+	playsound(get_turf(C), 'sound/misc/splort.ogg', 80, 1)
+	for(var/X in C.internal_organs)
+		var/obj/item/organ/O = X
+		var/org_zone = check_zone(O.zone)
+		if(org_zone != BODY_ZONE_PRECISE_GROIN)
+			continue
+		O.Remove()
+		O.forceMove(T)
+		organ_spilled = 1
+		. += X
+	if(cavity_item)
+		cavity_item.forceMove(T)
+		. += cavity_item
+		cavity_item = null
+		organ_spilled = 1
+
+	if(organ_spilled)
+		C.visible_message("<span class='danger'><B>[C]'s internal organs spill out onto the floor!</B></span>")
+
 
 
 //limb removal. The "special" argument is used for swapping a limb with a new one without the effects of losing a limb kicking in.
-/obj/item/bodypart/proc/drop_limb(special)
+/obj/item/bodypart/proc/drop_limb(special, ignore_children = FALSE)
 	if(!owner)
 		return
 	var/atom/Tsec = owner.drop_location()
 	var/mob/living/carbon/C = owner
-	update_limb(1)
 	C.bodyparts -= src
+	update_limb(1)
+
+	if(status_flags & ORGAN_SPLINTED)
+		C.splinted_limbs -= src
 
 	if(held_index)
 		C.dropItemToGround(owner.get_item_for_held_index(held_index), 1)
 		C.hand_bodyparts[held_index] = null
 
 	owner = null
+
+	if(!ignore_children)
+		for(var/BP in children_zones)
+			var/obj/item/bodypart/thing = C.get_bodypart(BP)
+			if(thing)
+				thing.drop_limb(special, ignore_children)
+				thing.forceMove(src)
+		C.updatehealth()
 
 	for(var/X in C.surgeries) //if we had an ongoing surgery on that limb, we stop it.
 		var/datum/surgery/S = X
@@ -266,7 +308,7 @@
 			O.drop_limb(1)
 	attach_limb(C, special)
 
-/obj/item/bodypart/proc/attach_limb(mob/living/carbon/C, special)
+/obj/item/bodypart/proc/attach_limb(mob/living/carbon/C, special, ignore_parent_restriction = FALSE) //the third argument is literally useless if not a child lol
 	moveToNullspace()
 	owner = C
 	C.bodyparts += src
@@ -291,9 +333,11 @@
 				qdel(S)
 				break
 
-	for(var/obj/item/organ/O in contents)
+	for(var/obj/item/bodypart/BP in src) //stored limbs. in normal circumstances, this will be either nothing or just the children.
+		BP.attach_limb(C, special, ignore_parent_restriction)
+	for(var/obj/item/organ/O in src)
 		O.Insert(C)
-
+	
 	update_bodypart_damage_state()
 
 	C.updatehealth()
@@ -302,9 +346,51 @@
 	C.update_damage_overlays()
 	C.update_mobility()
 
+// Legs require a groin to be attached. Hands require arms. Feet require legs.
+// Well. On humans, at least, because i'm too fucking lazy to update all carbons.
+/obj/item/bodypart/r_leg/attach_limb(mob/living/carbon/C, special, ignore_parent_restriction)
+	if(ishuman(C) && !ignore_parent_restriction)
+		if(C.get_bodypart(parent_bodyzone))
+			..()
+	else
+		..()
 
+/obj/item/bodypart/l_leg/attach_limb(mob/living/carbon/C, special, ignore_parent_restriction)
+	if(ishuman(C) && !ignore_parent_restriction)
+		if(C.get_bodypart(parent_bodyzone))
+			..()
+	else
+		..()
+
+/obj/item/bodypart/r_leg/r_foot/attach_limb(mob/living/carbon/C, special, ignore_parent_restriction)
+	if(ishuman(C) && !ignore_parent_restriction)
+		if(C.get_bodypart(parent_bodyzone))
+			..()
+	else if(ignore_parent_restriction)
+		..()
+
+/obj/item/bodypart/l_leg/l_foot/attach_limb(mob/living/carbon/C, special, ignore_parent_restriction)
+	if(ishuman(C) && !ignore_parent_restriction)
+		if(C.get_bodypart(parent_bodyzone))
+			..()
+	else if(ignore_parent_restriction)
+		..()
+/obj/item/bodypart/r_arm/r_hand/attach_limb(mob/living/carbon/C, special, ignore_parent_restriction)
+	if(ishuman(C) && !ignore_parent_restriction)
+		if(C.get_bodypart(parent_bodyzone))
+			..()
+	else if(ignore_parent_restriction)
+		..()
+
+/obj/item/bodypart/l_arm/l_hand/attach_limb(mob/living/carbon/C, special, ignore_parent_restriction)
+	if(ishuman(C) && !ignore_parent_restriction)
+		if(C.get_bodypart(parent_bodyzone))
+			..()
+	else if(ignore_parent_restriction)
+		..()
+
+//Transfer some head appearance vars over
 /obj/item/bodypart/head/attach_limb(mob/living/carbon/C, special)
-	//Transfer some head appearance vars over
 	if(brain)
 		if(brainmob)
 			brainmob.container = null //Reset brainmob head var.
@@ -336,23 +422,26 @@
 
 	..()
 
-
 //Regenerates all limbs. Returns amount of limbs regenerated
-/mob/living/proc/regenerate_limbs(noheal = FALSE, list/excluded_limbs = list())
-	SEND_SIGNAL(src, COMSIG_LIVING_REGENERATE_LIMBS, noheal, excluded_limbs)
+/mob/living/proc/regenerate_limbs(noheal = FALSE, list/excluded_limbs = list(), ignore_parent_restriction = FALSE)
+	SEND_SIGNAL(src, COMSIG_LIVING_REGENERATE_LIMBS, noheal, excluded_limbs, ignore_parent_restriction)
 
-/mob/living/carbon/regenerate_limbs(noheal = FALSE, list/excluded_limbs = list())
+/mob/living/carbon/regenerate_limbs(noheal = FALSE, list/excluded_limbs = list(), ignore_parent_restriction = FALSE)
 	. = ..()
 	var/list/limb_list = list(BODY_ZONE_HEAD, BODY_ZONE_CHEST, BODY_ZONE_R_ARM, BODY_ZONE_L_ARM, BODY_ZONE_R_LEG, BODY_ZONE_L_LEG)
 	if(excluded_limbs.len)
 		limb_list -= excluded_limbs
+	if(ishuman(src))
+		limb_list = list(BODY_ZONE_HEAD, BODY_ZONE_CHEST, BODY_ZONE_PRECISE_GROIN,\
+						BODY_ZONE_R_ARM, BODY_ZONE_L_ARM, BODY_ZONE_PRECISE_R_HAND, BODY_ZONE_PRECISE_L_HAND,\
+						BODY_ZONE_PRECISE_R_FOOT, BODY_ZONE_PRECISE_L_FOOT)
 	for(var/Z in limb_list)
-		. += regenerate_limb(Z, noheal)
+		. += regenerate_limb(Z, noheal, ignore_parent_restriction)
 
-/mob/living/proc/regenerate_limb(limb_zone, noheal)
+/mob/living/proc/regenerate_limb(limb_zone, noheal, ignore_parent_restriction)
 	return
 
-/mob/living/carbon/regenerate_limb(limb_zone, noheal)
+/mob/living/carbon/regenerate_limb(limb_zone, noheal, ignore_parent_restriction)
 	var/obj/item/bodypart/L
 	if(get_bodypart(limb_zone))
 		return 0
@@ -364,5 +453,5 @@
 			L.brutestate = 0
 			L.burnstate = 0
 
-		L.attach_limb(src, 1)
+		L.attach_limb(src, 1, ignore_parent_restriction)
 		return 1

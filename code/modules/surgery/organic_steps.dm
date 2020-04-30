@@ -15,6 +15,8 @@
 		return FALSE
 	return TRUE
 /datum/surgery_step/incise/success(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery)
+	var/obj/item/bodypart/limb = target.get_bodypart(target_zone)
+	limb.open = TRUE
 	if ishuman(target)
 		var/mob/living/carbon/human/H = target
 		if (!(NOBLOOD in H.dna.species.species_traits))
@@ -82,12 +84,15 @@
 		return tool.get_temperature()
 	return TRUE
 /datum/surgery_step/close/success(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery)
+	var/obj/item/bodypart/limb = target.get_bodypart(target_zone)
+	limb.open = FALSE
 	if(locate(/datum/surgery_step/saw) in surgery.steps)
-		target.heal_bodypart_damage(45,0)
+		target.heal_bodypart_damage(23,0)
 	if (ishuman(target))
 		var/mob/living/carbon/human/H = target
 		H.bleed_rate = max( (H.bleed_rate - 3), 0)
 	return ..()
+
 //saw bone
 /datum/surgery_step/saw
 	name = "saw bone"
@@ -95,12 +100,14 @@
 	time = 54
 
 /datum/surgery_step/saw/preop(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery)
-	display_results(user, target, "<span class='notice'>You begin to saw through the bone in [target]'s [parse_zone(target_zone)]...</span>",
-		"[user] begins to saw through the bone in [target]'s [parse_zone(target_zone)].",
-		"[user] begins to saw through the bone in [target]'s [parse_zone(target_zone)].")
+	var/obj/item/bodypart/BP = target.get_bodypart(target_zone)
+	var/isencased = BP.encased ? BP.encased : "bone"
+	display_results(user, target, "<span class='notice'>You begin to saw through the [isencased] in [target]'s [parse_zone(target_zone)]...</span>",
+		"[user] begins to saw through the [isencased] in [target]'s [parse_zone(target_zone)].",
+		"[user] begins to saw through the [isencased] in [target]'s [parse_zone(target_zone)].")
 
 /datum/surgery_step/saw/success(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery)
-	target.apply_damage(50, BRUTE, "[target_zone]")
+	target.apply_damage(12, BRUTE, "[target_zone]", blocked = FALSE, forced = TRUE)
 	display_results(user, target, "<span class='notice'>You saw [target]'s [parse_zone(target_zone)] open.</span>",
 		"[user] saws [target]'s [parse_zone(target_zone)] open!",
 		"[user] saws [target]'s [parse_zone(target_zone)] open!")
@@ -113,9 +120,11 @@
 	time = 30
 
 /datum/surgery_step/drill/preop(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery)
-	display_results(user, target, "<span class='notice'>You begin to drill into the bone in [target]'s [parse_zone(target_zone)]...</span>",
-		"[user] begins to drill into the bone in [target]'s [parse_zone(target_zone)].",
-		"[user] begins to drill into the bone in [target]'s [parse_zone(target_zone)].")
+	var/obj/item/bodypart/BP = target.get_bodypart(target_zone)
+	var/isencased = BP.encased ? BP.encased : "bone"
+	display_results(user, target, "<span class='notice'>You begin to drill into the [isencased] in [target]'s [parse_zone(target_zone)]...</span>",
+		"[user] begins to drill into the [isencased] in [target]'s [parse_zone(target_zone)].",
+		"[user] begins to drill into the [isencased] in [target]'s [parse_zone(target_zone)].")
 
 /datum/surgery_step/drill/success(mob/user, mob/living/carbon/target, target_zone, obj/item/tool, datum/surgery/surgery)
 	display_results(user, target, "<span class='notice'>You drill into [target]'s [parse_zone(target_zone)].</span>",

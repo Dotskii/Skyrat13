@@ -881,6 +881,9 @@
 		var/datum/disease/D = thing
 		if(D.severity != DISEASE_SEVERITY_POSITIVE)
 			D.cure(FALSE)
+	for(var/obj/item/bodypart/BP in bodyparts)
+		BP.status_flags &= ~BODYPART_BROKEN
+		BP.internal_bleeding = FALSE
 	if(admin_revive)
 		regenerate_limbs()
 		regenerate_organs()
@@ -1150,3 +1153,10 @@
 			dna.features["body_model"] = MALE
 	if(update_icon)
 		update_body()
+
+/mob/living/carbon/proc/handle_splints() //proc that rebuilds the list of splints on this person, for ease of processing
+	splinted_limbs.Cut()
+	for(var/obj/item/bodypart/limb in bodyparts)
+		if(limb.status & BODYPART_SPLINTED)
+			splinted_limbs += limb
+			addtimer(CALLBACK(limb, /obj/item/bodypart/proc/unsplint), rand(9000, 18000))

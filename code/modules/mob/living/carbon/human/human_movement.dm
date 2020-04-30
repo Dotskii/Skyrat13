@@ -15,10 +15,22 @@
 		var/static/datum/config_entry/number/movedelay/sprint_speed_increase/SSI
 		if(!SSI)
 			SSI = CONFIG_GET_ENTRY(number/movedelay/sprint_speed_increase)
+		if(get_missing_limbs()) //you can't sprint without fucken legs or feet (...as a human.)
+			if((/obj/item/bodypart/r_leg || 	/obj/item/bodypart/l_leg) in get_missing_limbs())
+				. += SSI.config_entry_value
+		else
+			for(var/obj/item/bodypart/r_leg/right in bodyparts)
+				if(right.status_flags & BODYPART_BROKEN)
+					if(!(right.status_flags & BODYPART_SPLINTED))
+						. += SSI.config_entry_value/4
+			for(var/obj/item/bodypart/r_leg/left in bodyparts)
+				if(left.status_flags & BODYPART_BROKEN)
+					if(!(left.status_flags & BODYPART_SPLINTED))
+						. += SSI.config_entry_value/4
 		. -= SSI.config_entry_value
 	if(wrongdirmovedelay)
 		. += 1
-	if (m_intent == MOVE_INTENT_WALK && HAS_TRAIT(src, TRAIT_SPEEDY_STEP))
+	if(m_intent == MOVE_INTENT_WALK && HAS_TRAIT(src, TRAIT_SPEEDY_STEP))
 		. -= 1.5
 
 /mob/living/carbon/human/slip(knockdown_amount, obj/O, lube)

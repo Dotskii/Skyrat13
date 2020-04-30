@@ -1,5 +1,5 @@
 import { useBackend } from '../backend';
-import { Box, Section, LabeledList, Button, ProgressBar, Flex, AnimatedNumber } from '../components';
+import { Box, Section, LabeledList, Button, ProgressBar, Flex, AnimatedNumber, ColorBox } from '../components';
 import { Fragment } from 'inferno';
 
 export const Sleeper = props => {
@@ -53,6 +53,10 @@ export const Sleeper = props => {
       label: 'Oxygen',
       type: 'oxyLoss',
     },
+    {
+      label: 'Cellular',
+      type: 'cloneLoss',
+    },
   ];
 
   return (
@@ -102,14 +106,93 @@ export const Sleeper = props => {
                 {data.blood_status}
               </LabeledList.Item>
               <LabeledList.Item
-                label="Cells"
-                color={occupant.cloneLoss ? 'bad' : 'good'}>
-                {occupant.cloneLoss ? 'Damaged' : 'Healthy'}
+                label={'Limb Damage'}
+                key={'Limb Damage'}>
+                {'\n'}
+                {data.occupant.limbs.map(funnylimb => (
+                  <LabeledList.Item
+                    key={funnylimb.name}
+                    label={funnylimb.name}>
+                    <ProgressBar
+                      value={funnylimb.maxdamage - funnylimb.damage}
+                      minvalue={0}
+                      maxValue={funnylimb.maxdamage}
+                      ranges={{
+                        good: [(funnylimb.maxdamage/4)*3, Infinity],
+                        average: [(funnylimb.maxdamage/4)*2,
+                          (funnylimb.maxdamage/4)*3],
+                        bad: [-Infinity, (funnylimb.maxdamage/4)*2],
+                      }}>
+                      {funnylimb.broken
+                        ? 'BROKEN, '
+                        : 'NOT BROKEN, '}
+                      {funnylimb.bleeding
+                        ? 'INTERNAL BLEEDING'
+                        : 'NO INTERNAL BLEEDING'}
+                    </ProgressBar>
+                  </LabeledList.Item>
+                ),
+                )}
               </LabeledList.Item>
               <LabeledList.Item
-                label="Brain"
-                color={occupant.brainLoss ? 'bad' : 'good'}>
-                {occupant.brainLoss ? 'Abnormal' : 'Healthy'}
+                label={'Missing Limbs'}
+                key={'Missing Limbs'}>
+                {'\n'}
+                {data.occupant.missing_limbs.map(lostlimb => (
+                  <LabeledList.Item
+                    key={lostlimb.name}
+                    label={lostlimb.name}>
+                    <ColorBox
+                      content={'MISSING'}
+                      minWidth={"86px"}
+                      backgroundColor={"#b30000"}
+                      color={"#b30000"} />
+                  </LabeledList.Item>
+                ),
+                )}
+              </LabeledList.Item>
+              <LabeledList.Item
+                label={'Organ Damage'}
+                key={'Organ Damage'}>
+                {'\n'}
+                {data.occupant.organs.map(funnyorgan => (
+                  <LabeledList.Item
+                    key={funnyorgan.name}
+                    label={funnyorgan.name}>
+                    <ProgressBar
+                      value={funnyorgan.maxdamage - funnyorgan.damage}
+                      minvalue={0}
+                      maxValue={funnyorgan.maxdamage}
+                      ranges={{
+                        good: [(funnyorgan.maxdamage/4)*3, Infinity],
+                        average: [(funnyorgan.maxdamage/4)*2,
+                          (funnyorgan.maxdamage/4)*3],
+                        bad: [-Infinity, (funnyorgan.maxdamage/4)*2],
+                      }}>
+                      {funnyorgan.failing
+                        ? 'ORGAN FAILURE'
+                        : 'FUNCTIONAL'}
+                    </ProgressBar>
+                  </LabeledList.Item>
+                ),
+                )}
+              </LabeledList.Item>
+              <LabeledList.Item
+                label={'Missing Organs'}
+                key={'Missing Organs'}>
+                {'\n'}
+                {data.occupant.missing_organs.map(funnyorgan => (
+                  <LabeledList.Item
+                    key={funnyorgan.name}
+                    label={funnyorgan.name}>
+                    <ColorBox
+                      content={'MISSING'}
+                      minWidth={"86px"}
+                      backgroundColor={"#b30000"}
+                      color={"#b30000"} />
+                  </LabeledList.Item>
+                ),
+                )}
               </LabeledList.Item>
             </LabeledList>
           </Fragment>

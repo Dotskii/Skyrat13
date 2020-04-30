@@ -275,6 +275,64 @@
 	attack_verb = list("attacked", "slashed", "sawed", "cut")
 	sharpness = IS_SHARP
 
+/obj/item/bonesettler
+	name = "bone setter"
+	desc = "Allan, please add details."
+	icon = 'icons/obj/surgery.dmi'
+	icon_state = "bone-setter"
+	lefthand_file = 'icons/mob/inhands/equipment/medical_lefthand.dmi'
+	righthand_file = 'icons/mob/inhands/equipment/medical_righthand.dmi'
+	item_flags = SURGICAL_TOOL
+	flags_1 = CONDUCT_1
+	force = 10
+	w_class = WEIGHT_CLASS_NORMAL
+	throwforce = 5
+	throw_speed = 1
+	throw_range = 4
+	custom_materials = list(/datum/material/iron=15000)
+	attack_verb = list("setted", "bonked")
+	sharpness = IS_SHARP
+	tool_behaviour = TOOL_SETTER
+	toolspeed = 1
+
+/obj/item/bonegel
+	name = "bone gel"
+	desc = "Allan, please add details."
+	icon = 'icons/obj/surgery.dmi'
+	icon_state = "bone-gel"
+	lefthand_file = 'icons/mob/inhands/equipment/medical_lefthand.dmi'
+	righthand_file = 'icons/mob/inhands/equipment/medical_righthand.dmi'
+	item_flags = SURGICAL_TOOL
+	flags_1 = CONDUCT_1
+	force = 10
+	w_class = WEIGHT_CLASS_SMALL
+	throwforce = 5
+	throw_speed = 1
+	throw_range = 4
+	custom_materials = list(/datum/material/iron=10000, /datum/material/silver=4000)
+	attack_verb = list("gelled")
+	tool_behaviour = TOOL_GEL
+	toolspeed = 1
+
+/obj/item/fixovein
+	name = "fix o' vein"
+	desc = "Allan, please add details."
+	icon = 'icons/obj/surgery.dmi'
+	icon_state = "fixovein"
+	lefthand_file = 'icons/mob/inhands/equipment/medical_lefthand.dmi'
+	righthand_file = 'icons/mob/inhands/equipment/medical_righthand.dmi'
+	item_flags = SURGICAL_TOOL
+	flags_1 = CONDUCT_1
+	force = 0
+	w_class = WEIGHT_CLASS_SMALL
+	throwforce = 5
+	throw_speed = 2
+	throw_range = 7
+	custom_materials = list(/datum/material/iron=10000, /datum/material/silver=4000)
+	attack_verb = list("gelled")
+	tool_behaviour = TOOL_FIXOVEIN
+	toolspeed = 1
+
 /obj/item/surgical_drapes
 	name = "surgical drapes"
 	desc = "Nanotrasen brand surgical drapes provide optimal safety and infection control."
