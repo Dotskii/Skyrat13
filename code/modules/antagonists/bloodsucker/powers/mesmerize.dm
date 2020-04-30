@@ -141,6 +141,7 @@
 			to_chat(L, "<span class='warning'>[target] has snapped out of their trance.</span>")
 	//SKYRAT CHANGE - fix permanent mesmerize combat mode lock
 	REMOVE_TRAIT(target, TRAIT_COMBAT_MODE_LOCKED, src)
+	target.update_combat_lock()
 	//
 
 
