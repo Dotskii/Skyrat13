@@ -217,7 +217,8 @@
 	config_entry_value = list(			//DEFAULTS
 	/mob/living/simple_animal = 1,
 	/mob/living/silicon/pai = 1,
-	/mob/living/carbon/alien/humanoid/hunter = -1,
+	/mob/living/carbon/alien/humanoid/sentinel = 0.25,
+	/mob/living/carbon/alien/humanoid/drone = 0.5,
 	/mob/living/carbon/alien/humanoid/royal/praetorian = 1,
 	/mob/living/carbon/alien/humanoid/royal/queen = 3
 	)
@@ -295,9 +296,10 @@
 /datum/config_entry/number/outdated_movedelay/animal_delay
 	movedelay_type = /mob/living/simple_animal
 /////////////////////////////////////////////////
-
+//Skyrat changes
 /datum/config_entry/number/projectile_speed_modifier
 	config_entry_value = 1
+//End of skyrat changes
 
 /datum/config_entry/flag/roundstart_away	//Will random away mission be loaded.
 
