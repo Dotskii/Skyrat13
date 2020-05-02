@@ -228,3 +228,138 @@
 	category = CAT_ROBOT
 */
 
+
+///////////////////////
+///VG WEAPON CRAFTING//
+///////////////////////
+/datum/crafting_recipe/cylinder
+	name = "Aluminum cylinder"
+	result = /obj/item/aluminum_cylinder
+	reqs = list(/obj/item/reagent_containers/food/drinks/soda_cans = 1)
+	tools = list(TOOL_WIRECUTTER)
+	time = 20
+	category = CAT_WEAPONRY
+	subcategory = CAT_WEAPON
+
+/datum/crafting_recipe/cylinder
+	name = "Cylinder assembly"
+	result = /obj/item/cylinder_assembly
+	reqs = list(/obj/item/aluminum_cylinder = 2)
+	tools = list(NONE)
+	time = 20
+	category = CAT_WEAPONRY
+	subcategory = CAT_WEAPON
+
+/datum/crafting_recipe/barrel
+	name = "Makeshift gun barrel"
+	result = /obj/item/gun_barrel
+	reqs = list(/obj/item/cylinder_assembly = 1)
+	tools = list(TOOL_WELDER)
+	time = 40
+	category = CAT_WEAPONRY
+	subcategory = CAT_WEAPON
+
+/datum/crafting_recipe/reservoir
+	name = "Fuel reservoir"
+	result = /obj/item/fuel_reservoir
+	reqs = list(/obj/item/grenade/chem_grenade = 1)
+	tools = list(TOOL_SCREWDRIVER)
+	time = 20
+	category = CAT_WEAPONRY
+	subcategory = CAT_WEAPON
+
+/datum/crafting_recipe/blade
+	name = "Metal blade"
+	result = /obj/item/metal_blade
+	reqs = list(/obj/item/kitchen/knife = 1)
+	tools = list(TOOL_SCREWDRIVER)
+	time = 20
+	category = CAT_WEAPONRY
+	subcategory = CAT_WEAPON
+
+/datum/crafting_recipe/largeblade
+	name = "Large metal blade"
+	result = /obj/item/metal_blade
+	reqs = list(/obj/item/kitchen/knife/butcher = 1)
+	tools = list(TOOL_SCREWDRIVER)
+	time = 20
+	category = CAT_WEAPONRY
+	subcategory = CAT_WEAPON
+
+/datum/crafting_recipe/rails
+	name = "Metal rails"
+	result = /obj/item/rail_assembly
+	reqs = list(/obj/item/wirerod = 1,\
+				/obj/item/stack/rods = 5)
+	tools = list(TOOL_WELDER)
+	time = 50
+	category = CAT_WEAPONRY
+	subcategory = CAT_WEAPON
+
+/datum/crafting_recipe/beakercylinder
+	name = "Beaker cylinder"
+	result = /obj/item/cylinder
+	reqs = list(/obj/item/reagent_containers/beaker = 1)
+	tools = list(TOOL_SCREWDRIVER)
+	time = 20
+	category = CAT_WEAPONRY
+	subcategory = CAT_WEAPON
+
+/datum/crafting_recipe/assemblygeneral
+	name = "General gun assembly"
+	result = /obj/item/gun_assembly/stock_reservoir_assembly
+	reqs = list(/obj/item/metal_gun_stock = 1,\
+				/obj/item/fuel_reservoir = 1)
+	tools = list(TOOL_WRENCH, TOOL_WELDER)
+	time = 150
+	category = CAT_WEAPONRY
+	subcategory = CAT_WEAPON
+
+/datum/crafting_recipe/assemblygeneralbarreled
+	name = "General barreled gun assembly"
+	result = /obj/item/gun_assembly/stock_reservoir_barrel_assembly
+	reqs = list(/obj/item/gun_assembly/stock_reservoir_assembly = 1,\
+				/obj/item/gun_barrel = 1)
+	tools = list(TOOL_WRENCH)
+	time = 100
+	category = CAT_WEAPONRY
+	subcategory = CAT_WEAPON
+
+/datum/crafting_recipe/blunderbuss
+	name = "Blunderbuss"
+	result = /obj/item/blunderbuss
+	reqs = list(/obj/item/gun_assembly/stock_reservoir_barrel_assembly = 1,\
+				/obj/item/assembly/igniter = 1)
+	tools = list(TOOL_WRENCH)
+	time = 30
+	category = CAT_WEAPONRY
+	subcategory = CAT_WEAPON
+
+/datum/crafting_recipe/wiredwrench
+	name = "Wired wrench"
+	result = /obj/item/wrench_wired
+	reqs = list(/obj/item/stack/cable_coil = 5)
+	tools = list(NONE)
+	time = 100
+	category = CAT_WEAPONRY
+	subcategory = CAT_WEAPON
+
+/datum/crafting_recipe/cannonassembly
+	name = "Wheelchair assembly"
+	result = /obj/vehicle/ridden/wheelchair/wheelchair_assembly
+	reqs = list(/obj/item/stack/cable_coil = 5,\
+				/obj/item/gun_barrel = 1,\
+				/obj/vehicle/ridden/wheelchair = 1)
+	tools = list(TOOL_WRENCH)
+	time = 250
+	category = CAT_WEAPONRY
+	subcategory = CAT_WEAPON
+
+/datum/crafting_recipe/cannon
+	name = "Wheelchair cannon"
+	result = /obj/vehicle/ridden/wheelchair/wheelchair_assembly/cannon
+	reqs = list(/obj/vehicle/ridden/wheelchair/wheelchair_assembly = 1)
+	tools = list(TOOL_WELDER)
+	time = 100
+	category = CAT_WEAPONRY
+	subcategory = CAT_WEAPON

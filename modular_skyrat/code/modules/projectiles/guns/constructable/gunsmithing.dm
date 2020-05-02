@@ -1,5 +1,4 @@
-//Gun smithing stuff, taken from /vg/
-
+/* ONLY SERVES AS REFERENCE TO MAKE RECIPES!!!!
 /obj/item/aluminum_cylinder
 	name = "aluminum cylinder"
 	desc = "A soda can that has had the top and bottom cut out."
@@ -735,7 +734,6 @@
 			cannon_assembly = 1
 			update_wheelchair_assembly()
 //CANNON END///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/* I don't want to deal with this one
 /obj/machinery/power/secured_capacitor
 	name = "capacitor"
 	desc = "A basic capacitor used in the construction of a variety of devices."
