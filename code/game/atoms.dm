@@ -28,7 +28,6 @@
 	var/list/managed_overlays
 
 	var/datum/proximity_monitor/proximity_monitor
-	var/fingerprintslast
 
 	var/list/filter_data //For handling persistent filters
 

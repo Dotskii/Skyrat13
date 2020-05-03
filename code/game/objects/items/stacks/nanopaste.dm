@@ -8,7 +8,7 @@
 	max_amount = 6
 	toolspeed = 1
 
-/obj/item/stack/nanopaste/attack(mob/living/M as mob, mob/user as mob)
+/obj/item/stack/nanopaste/attack(mob/living/M, mob/living/user)
 	if(!istype(M) || !istype(user))
 		return 0
 	if(istype(M,/mob/living/silicon/robot))	//Repairing cyborgs
@@ -27,12 +27,12 @@
 		var/obj/item/bodypart/S = H.get_bodypart(user.zone_selected)
 
 		var/is_robotic = !S.is_organic_limb()
-		if(S && is_robotic))
+		if(S && is_robotic)
 			if(S.get_damage())
 				use(1)
 				S.heal_damage(15)
-				var/list/organs = target.getorganszone(user.target_zone)
-				var/roboorgans
+				var/list/organs = H.getorganszone(user.zone_selected)
+				var/list/roboorgans
 				for(var/obj/item/organ/O in organs)
 					if(O.organ_flags & ORGAN_SYNTHETIC || O.status == ORGAN_ROBOTIC)
 						if(O.damage > 0)
@@ -41,7 +41,7 @@
 					OR.damage = max((OR.damage - 15/roboorgans.len), 0) //just to be sure
 			if(H.bleed_rate)
 				H.bleed_rate = 0
-			user.visible_message("<span class='notice'>\The [user] applies some nanite paste at \the [M]'s [E.name] with \the [src].</span>")
+			user.visible_message("<span class='notice'>\The [user] applies some nanite paste at \the [M]'s [S.name] with \the [src].</span>")
 		else
 			to_chat(user, "<span class='notice'>Nothing to fix here.</span>")
 	else
