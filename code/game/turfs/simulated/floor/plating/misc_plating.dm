@@ -3,10 +3,6 @@
 	icon_state = "plating"
 	initial_gas_mix = AIRLESS_ATMOS
 
-/turf/open/floor/plating/icemoon
-	icon_state = "plating"
-	initial_gas_mix = ICEMOON_DEFAULT_ATMOS
-
 /turf/open/floor/plating/abductor
 	name = "alien floor"
 	icon_state = "alienpod1"
@@ -213,8 +209,6 @@
 /turf/open/floor/plating/ice/burn_tile()
 	return
 
-/turf/open/floor/plating/ice/icemoon
-	initial_gas_mix = ICEMOON_DEFAULT_ATMOS
 
 /turf/open/floor/plating/snowed
 	name = "snowed-over plating"
@@ -246,6 +240,4 @@
 /turf/open/floor/plating/snowed/temperatre
 	temperature = 255.37
 
-/turf/open/floor/plating/snowed/smoothed/icemoon
-	initial_gas_mix = ICEMOON_DEFAULT_ATMOS
 
