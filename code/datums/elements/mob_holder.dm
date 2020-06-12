@@ -83,11 +83,15 @@
 	var/pickup_sound = null
 	//
 
-/obj/item/clothing/head/mob_holder/Initialize(mapload, mob/living/target, worn_state, alt_worn, right_hand, left_hand, slots = NONE, damage = -1, sharp_ness = IS_BLUNT, gibby = FALSE, atksound = null, pckupsound = null) //skyRAT edit
+/obj/item/clothing/head/mob_holder/Initialize(mapload, mob/living/target, worn_state, alt_worn, right_hand, left_hand, slots = NONE, damage = -1, sharp_ness = IS_BLUNT, gibby = FALSE, atksound = null, pckupsound = null, override_icon = FALSE) //skyRAT edit
 	. = ..()
 
 	if(target)
-		assimilate(target)
+		assimilate(target, override_icon) //skyrat edit
+	//skyrat edit
+	if(override_icon && alt_worn)
+		icon = mob_overlay_icon
+	//
 
 	if(alt_worn)
 		mob_overlay_icon = alt_worn
@@ -126,7 +130,7 @@
 		playsound(src, pickup_sound, 50, 0, -4)
 //
 
-/obj/item/clothing/head/mob_holder/proc/assimilate(mob/living/target)
+/obj/item/clothing/head/mob_holder/proc/assimilate(mob/living/target, override_icon)//skyrat edit
 	target.setDir(SOUTH)
 	held_mob = target
 	target.forceMove(src)
