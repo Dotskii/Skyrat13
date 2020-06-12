@@ -78,8 +78,12 @@
 	w_class = WEIGHT_CLASS_BULKY
 	dynamic_hair_suffix = ""
 	var/mob/living/held_mob
+	//skyrat edit
+	var/gibs = FALSE
+	var/pickup_sound = null
+	//
 
-/obj/item/clothing/head/mob_holder/Initialize(mapload, mob/living/target, worn_state, alt_worn, right_hand, left_hand, slots = NONE)
+/obj/item/clothing/head/mob_holder/Initialize(mapload, mob/living/target, worn_state, alt_worn, right_hand, left_hand, slots = NONE, damage = -1, sharp_ness = IS_BLUNT, gibby = FALSE, atksound = null, pckupsound = null) //skyRAT edit
 	. = ..()
 
 	if(target)
@@ -94,7 +98,33 @@
 		lefthand_file = left_hand
 	if(right_hand)
 		righthand_file = right_hand
+	//skyRAT edit
+	if(damage >= 0)
+		force = damage
+	if(sharp_ness)
+		sharpness = sharp_ness
+	if(gibby)
+		gibs = TRUE
+	if(atksound)
+		hitsound = atksound
+	if(pckupsound)
+		pickup_sound = pckupsound
+	//
 	slot_flags = slots
+
+//skyrat edit - rat
+/obj/item/clothing/head/mob_holder/afterattack(atom/target, mob/user, proximity_flag, click_parameters)
+	..()
+	if(gibs && proximity_flag)
+		if(isliving(target))
+			var/mob/living/die = target
+			die.gib()
+
+/obj/item/clothing/head/mob_holder/pickup(mob/living/user)
+	. = ..()
+	if(pickup_sound)
+		playsound(src, pickup_sound, 50, 0, -4)
+//
 
 /obj/item/clothing/head/mob_holder/proc/assimilate(mob/living/target)
 	target.setDir(SOUTH)

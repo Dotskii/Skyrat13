@@ -29,13 +29,26 @@
 	var/body_color //brown, gray and white, leave blank for random
 	gold_core_spawnable = FRIENDLY_SPAWN
 	var/chew_probability = 1
+	//skyrat edit
+	var/rat_mode = FALSE
+	//
+
+//skyrat edit
+/mob/living/simple_animal/mouse/fat
+	rat_mode = TRUE
+//
 
 /mob/living/simple_animal/mouse/Initialize()
 	. = ..()
 	AddComponent(/datum/component/squeak, list('sound/effects/mousesqueek.ogg'=1), 100)
 	if(!body_color)
 		body_color = pick(list("brown","gray","white"))
-	AddElement(/datum/element/mob_holder, "mouse_[body_color]")
+	//skyRAT edit
+	if(prob(99) && !rat_mode)
+		AddElement(/datum/element/mob_holder, "mouse_[body_color]")
+	else
+		AddElement(/datum/element/mob_holder/yoink, "fat_rat", 'modular_skyrat/icons/mob/rat.dmi', 'modular_skyrat/icons/mob/inhands/rat_righthand.dmi', 'modular_skyrat/icons/mob/inhands/rat_lefthand.dmi', NONE)
+	//
 	icon_state = "mouse_[body_color]"
 	icon_living = "mouse_[body_color]"
 	icon_dead = "mouse_[body_color]_dead"
