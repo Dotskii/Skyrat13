@@ -16,7 +16,7 @@
 	speak = list("Burbger...", "McDomnald...", "Whompper...", "Bimg Mac...", "Whemre are the miners?", "Revolutiom!",\
 				"Pizza cramte.", "Collemctable hats...", "Research mining tech stupid sciemtists!", "Where's my rimpley?",\
 				"Shomtgun crate.", "Free cargo!", "No horny.")
-
+	gender = MALE
 	butcher_results = list(/obj/item/reagent_containers/food/snacks/burger/cheese = 5)
 	faction = list("dog", "doge")
 	animal_species = /mob/living/simple_animal/pet/dog
