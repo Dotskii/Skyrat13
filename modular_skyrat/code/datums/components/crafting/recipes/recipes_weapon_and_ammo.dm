@@ -113,7 +113,7 @@
 	time = 400
 	category = CAT_WEAPONRY
 	subcategory = CAT_WEAPON
-
+/*
 /datum/crafting_recipe/box_gun
 	name = "Box gun"
 	result = /obj/item/gun/ballistic/revolver/doublebarrel/contender/box_gun
@@ -125,7 +125,7 @@
 	time = 60
 	category = CAT_WEAPONRY
 	subcategory = CAT_WEAPON
-
+*/
 /datum/crafting_recipe/watcherproj
 	name = "Watcher Projector"
 	result = /obj/item/gun/energy/watcherprojector
@@ -218,7 +218,7 @@
 	time = 75
 	category = CAT_WEAPONRY
 	subcategory = CAT_WEAPON
-
+/*
 /datum/crafting_recipe/lockermechdrill
 	name = "Makeshift exosuit drill"
 	result = /obj/item/mecha_parts/mecha_equipment/drill/makeshift
@@ -247,7 +247,7 @@
 	tools = list(TOOL_SCREWDRIVER)
 	time = 50
 	category = CAT_ROBOT
-
+*/
 /* it's now built like an actual mech. need to craft makeshift chassis though, which is here.
 /datum/crafting_recipe/lockermech
 	name = "Locker Mech"

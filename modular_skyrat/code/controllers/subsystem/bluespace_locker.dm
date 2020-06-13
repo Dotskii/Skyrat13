@@ -1,3 +1,4 @@
+/*
 SUBSYSTEM_DEF(bluespace_locker)
 	name = "Bluespace Locker"
 	flags = SS_NO_FIRE
@@ -67,3 +68,4 @@ SUBSYSTEM_DEF(bluespace_locker)
 		internal_locker.dump_contents()
 	internal_locker.update_icon()
 	external_locker.update_icon()
+*/

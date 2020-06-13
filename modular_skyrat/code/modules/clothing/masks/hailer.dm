@@ -1,4 +1,5 @@
-/obj/item/clothing/mask/gas/sechailer/cpmask
+/*
+obj/item/clothing/mask/gas/sechailer/cpmask
 	name = "Civil Protection gas mask"
 	icon = 'modular_skyrat/icons/obj/clothing/masks.dmi'
 	mob_overlay_icon = 'modular_skyrat/icons/mob/clothing/mask.dmi'
@@ -226,3 +227,4 @@
 		cooldown = world.time
 		cooldown_special = world.time
 		playsound(src.loc, "modular_skyrat/sound/voice/complionator/hecu/[phrase_sound].wav", 100, 0, 4)
+*/
