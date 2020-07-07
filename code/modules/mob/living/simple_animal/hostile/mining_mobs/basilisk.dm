@@ -111,14 +111,16 @@
 			qdel(bait)
 			visible_message("<span class='notice'>[src] examines [bait] closer, and telekinetically shatters the pen.</span>")
 
-/mob/living/simple_animal/hostile/asteroid/basilisk/watcher/random/Initialize()
+/mob/living/simple_animal/hostile/asteroid/basilisk/watcher/Initialize() //skyrat edit - every watcher has a chance to be a shiny
 	. = ..()
-	if(prob(1))
-		if(prob(75))
+	if(prob(10)) //skyrat edit
+		if(prob(50)) //skyrat edit
 			new /mob/living/simple_animal/hostile/asteroid/basilisk/watcher/magmawing(loc)
 		else
 			new /mob/living/simple_animal/hostile/asteroid/basilisk/watcher/icewing(loc)
 		return INITIALIZE_HINT_QDEL
+
+/mob/living/simple_animal/hostile/asteroid/basilisk/watcher/random
 
 /mob/living/simple_animal/hostile/asteroid/basilisk/watcher/magmawing
 	name = "magmawing watcher"
