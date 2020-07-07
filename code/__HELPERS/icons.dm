@@ -600,8 +600,8 @@ world
 	amount<0 or amount>1 are allowed
  */
 /proc/BlendRGB(rgb1 = BLOOD_COLOR_HUMAN, rgb2 = BLOOD_COLOR_HUMAN, amount = 0.5) //skyrat edit makes my fucking life easier
-	var/list/RGB1 = ReadRGB(rgb1)
-	var/list/RGB2 = ReadRGB(rgb2)
+	var/list/RGB1 = SimpleReadRGB(rgb1)
+	var/list/RGB2 = SimpleReadRGB(rgb2)
 	//skyrat edit
 	if(!length(RGB1))
 		if(length(RGB2))
@@ -628,6 +628,17 @@ world
 	var/alpha = usealpha ? round(RGB1[4] + (RGB2[4] - RGB1[4]) * amount, 1) : null
 
 	return isnull(alpha) ? rgb(r, g, b) : rgb(r, g, b, alpha)
+
+/proc/SimpleReadRGB(rgb)
+	var/length = length(rgb)
+	if(length != 6)
+		return FALSE
+	var/list/nums = list()
+	for(var/i in 1 to length)
+		var/bruh = copytext(rgb, i, i)
+		bruh *= (10 ^ (i-1))
+		nums += bruh
+	
 
 /proc/BlendRGBasHSV(rgb1, rgb2, amount)
 	return HSVtoRGB(RGBtoHSV(rgb1), RGBtoHSV(rgb2), amount)
