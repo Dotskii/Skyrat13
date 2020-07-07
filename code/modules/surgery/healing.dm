@@ -7,7 +7,7 @@
 				/datum/surgery_step/close)
 
 	target_mobtypes = list(/mob/living/carbon/human, /mob/living/carbon/monkey)
-	possible_locs = list(BODY_ZONE_CHEST)
+	possible_locs = TORSO_BODYPARTS //skyrat edit
 	requires_bodypart_type = BODYPART_ORGANIC //Skyrat change
 	replaced_by = /datum/surgery
 	ignore_clothes = TRUE
@@ -87,7 +87,7 @@
 		urdamageamt_brute += round((target.getBruteLoss()/ (missinghpbonus*2)),0.1)
 		urdamageamt_burn += round((target.getFireLoss()/ (missinghpbonus*2)),0.1)
 
-	target.take_bodypart_damage(urdamageamt_brute, urdamageamt_burn)
+	target.take_bodypart_damage(urdamageamt_brute, urdamageamt_burn, wound_bonus=CANT_WOUND) //skyrat edit
 	return FALSE
 
 /***************************BRUTE***************************/

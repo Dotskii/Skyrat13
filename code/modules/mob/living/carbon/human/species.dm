@@ -1085,9 +1085,14 @@ GLOBAL_LIST_EMPTY(roundstart_race_names)
 	if(slot in no_equip)
 		if(!I.species_exception || !is_type_in_list(src, I.species_exception))
 			return FALSE
-
+	/* skyrat edit
 	var/num_arms = H.get_num_arms(FALSE)
 	var/num_legs = H.get_num_legs(FALSE)
+	*/
+	//skyrat edit
+	var/num_hands = H.get_num_hands(FALSE)
+	var/num_feet = H.get_num_feet(FALSE)
+	//
 
 	switch(slot)
 		if(SLOT_HANDS)
@@ -1125,7 +1130,7 @@ GLOBAL_LIST_EMPTY(roundstart_race_names)
 				return FALSE
 			if( !(I.slot_flags & ITEM_SLOT_GLOVES) )
 				return FALSE
-			if(num_arms < 2)
+			if(num_hands < 2) //skyrat edit
 				return FALSE
 			return equip_delay_self_check(I, H, bypass_equip_delay_self)
 		if(SLOT_SHOES)
@@ -1133,7 +1138,7 @@ GLOBAL_LIST_EMPTY(roundstart_race_names)
 				return FALSE
 			if( !(I.slot_flags & ITEM_SLOT_FEET) )
 				return FALSE
-			if(num_legs < 2)
+			if(num_feet < 2) //skyrat edit
 				return FALSE
 			if(DIGITIGRADE in species_traits)
 				if(!is_species(H, /datum/species/lizard/ashwalker))
@@ -1253,7 +1258,7 @@ GLOBAL_LIST_EMPTY(roundstart_race_names)
 				return FALSE
 			if(!istype(I, /obj/item/restraints/handcuffs))
 				return FALSE
-			if(num_arms < 2)
+			if(num_hands < 2) //skyrat edit
 				return FALSE
 			return TRUE
 		if(SLOT_LEGCUFFED)
@@ -1261,7 +1266,7 @@ GLOBAL_LIST_EMPTY(roundstart_race_names)
 				return FALSE
 			if(!istype(I, /obj/item/restraints/legcuffs))
 				return FALSE
-			if(num_legs < 2)
+			if(num_feet < 2) //skyrat edit
 				return FALSE
 			return TRUE
 		if(SLOT_IN_BACKPACK)
@@ -1734,25 +1739,26 @@ GLOBAL_LIST_EMPTY(roundstart_race_names)
 	var/def_zone = affecting.body_zone
 
 	var/armor_block = H.run_armor_check(affecting, "melee", "<span class='notice'>Your armor has protected your [hit_area].</span>", "<span class='notice'>Your armor has softened a hit to your [hit_area].</span>",I.armour_penetration)
-	armor_block = min(90,armor_block) //cap damage reduction at 90%
 	var/Iforce = I.force //to avoid runtimes on the forcesay checks at the bottom. Some items might delete themselves if you drop them. (stunning yourself, ninja swords)
-	var/weakness = H.check_weakness(I, user)
-	apply_damage(totitemdamage * weakness, I.damtype, def_zone, armor_block, H) //CIT CHANGE - replaces I.force with totitemdamage
+	//skyrat edit
+	armor_block = min(95,armor_block) //cap damage reduction at 95%
+	var/Iwound_bonus = I.wound_bonus
 
-	H.send_item_attack_message(I, user, hit_area)
+	// this way, you can't wound with a surgical tool on help intent if they have a surgery active and are laying down, so a misclick with a circular saw on the wrong limb doesn't bleed them dry (they still get hit tho)
+	if((I.item_flags & SURGICAL_TOOL) && user.a_intent == INTENT_HELP && (H.mobility_flags & ~MOBILITY_STAND) && (LAZYLEN(H.surgeries) > 0))
+		Iwound_bonus = CANT_WOUND
+	//
+	var/weakness = H.check_weakness(I, user)
+
+	H.send_item_attack_message(I, user, hit_area, affecting)
+	
+	apply_damage(totitemdamage * weakness, I.damtype, def_zone, armor_block, H, wound_bonus = Iwound_bonus, bare_wound_bonus = I.bare_wound_bonus, sharpness = I.get_sharpness()) //CIT CHANGE - replaces I.force with totitemdamage //skyrat edit
 
 	I.do_stagger_action(H, user, totitemdamage)
 
 	if(!totitemdamage)
 		return 0 //item force is zero
-
-	//dismemberment
-	var/probability = I.get_dismemberment_chance(affecting)
-	if(prob(probability) || (HAS_TRAIT(H, TRAIT_EASYDISMEMBER) && prob(probability))) //try twice
-		if(affecting.dismember(I.damtype))
-			I.add_mob_blood(H)
-			playsound(get_turf(H), I.get_dismember_sound(), 80, 1)
-
+	
 	var/bloody = 0
 	if(((I.damtype == BRUTE) && I.force && prob(25 + (I.force * 2))))
 		if(affecting.status == BODYPART_ORGANIC)
@@ -1781,8 +1787,8 @@ GLOBAL_LIST_EMPTY(roundstart_race_names)
 						H.adjustOrganLoss(ORGAN_SLOT_BRAIN, I.force * 0.2)
 
 					if(H.stat == CONSCIOUS && H != user && prob(I.force + ((100 - H.health) * 0.5))) // rev deconversion through blunt trauma.
-						var/datum/antagonist/rev/rev = H.mind.has_antag_datum(/datum/antagonist/rev)
-						var/datum/antagonist/gang/gang = H.mind.has_antag_datum(/datum/antagonist/gang && !/datum/antagonist/gang/boss)
+						var/datum/antagonist/rev/rev = H.mind?.has_antag_datum(/datum/antagonist/rev)
+						var/datum/antagonist/gang/gang = H.mind?.has_antag_datum(/datum/antagonist/gang && !/datum/antagonist/gang/boss)
 						if(rev)
 							rev.remove_revolutionary(FALSE, user)
 						if(gang)

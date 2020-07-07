@@ -638,7 +638,15 @@
 		if(trail_type)
 			var/brute_ratio = round(getBruteLoss() / maxHealth, 0.1)
 			if(blood_volume && blood_volume > max((BLOOD_VOLUME_NORMAL*blood_ratio)*(1 - brute_ratio * 0.25), 0))//don't leave trail if blood volume below a threshold
-				blood_volume = max(blood_volume - max(1, brute_ratio * 2), 0) 					//that depends on our brute damage.
+				var/bleed_amt
+				if(iscarbon(src))
+					var/mob/living/carbon/C = src
+					for(var/i in C.all_wounds)
+						var/datum/wound/W = i
+						bleed_amt += W.drag_bleed_amt()
+				else
+					bleed_amt = max(1, brute_ratio * 2)
+				blood_volume = max(blood_volume - bleed_amt, 0) 					//that depends on our brute damage.
 				var/newdir = get_dir(target_turf, start)
 				if(newdir != direction)
 					newdir = newdir | direction
@@ -658,7 +666,7 @@
 						TH.transfer_mob_blood_dna(src)
 
 /mob/living/carbon/human/makeTrail(turf/T)
-	if((NOBLOOD in dna.species.species_traits) || !bleed_rate || bleedsuppress)
+	if((NOBLOOD in dna.species.species_traits) || !is_bleeding()) //skyrat edit
 		return
 	..()
 
@@ -750,7 +758,7 @@
 		// DO NOT GIVE CLCIKDELAY - resist_a_rest() handles spam prevention. Somewhat.
 		return FALSE
 
-	if(CHECK_MOBILITY(src, MOBILITY_USE) && resist_embedded()) //Citadel Change for embedded removal memes - requires being able to use items.
+	if(CHECK_MOBILITY(src, MOBILITY_USE)) //Citadel Change for embedded removal memes - requires being able to use items. //skyrat edit
 		// DO NOT GIVE DEFAULT CLICKDELAY - This is a combat action.
 		changeNext_move(CLICK_CD_MELEE)
 		return FALSE

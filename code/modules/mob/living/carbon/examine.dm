@@ -30,15 +30,74 @@
 			. += "<span class='deadsay'>[t_He] [t_is] limp and unresponsive, with no signs of life.</span>"
 		else if(get_bodypart(BODY_ZONE_HEAD))
 			. += "<span class='deadsay'>It appears that [t_his] brain is missing...</span>"
-
+	
+	//holy shit this is a big skyrat edit
+	/* skyrat edit
 	var/list/missing = get_missing_limbs()
-	for(var/t in missing)
-		if(t==BODY_ZONE_HEAD)
-			. += "<span class='deadsay'><B>[t_His] [parse_zone(t)] is missing!</B></span>"
-			continue
-		. += "<span class='warning'><B>[t_His] [parse_zone(t)] is missing!</B></span>"
+	*/
+	var/list/msg = list("<span class='warning'>")
 
-	var/list/msg = list()
+	var/list/missing = ALL_BODYPARTS
+	var/list/disabled = list()
+	for(var/X in bodyparts)
+		var/obj/item/bodypart/BP = X
+		//skyrat edit
+		if(BP.is_disabled())
+			disabled += BP
+		//
+		missing -= BP.body_zone
+		for(var/obj/item/I in BP.embedded_objects)
+		//skyrat edit
+			if(I.isEmbedHarmless())
+				msg += "<B>[t_He] [t_has] \a [icon2html(I, user)] [I] stuck to [t_his] [BP.name]!</B>\n"
+			else
+				msg += "<B>[t_He] [t_has] \a [icon2html(I, user)] [I] embedded in [t_his] [BP.name]!</B>\n"
+		for(var/datum/wound/W in BP.wounds)
+			msg += "[W.get_examine_description(user)]\n"
+		//
+
+	for(var/X in disabled)
+		var/obj/item/bodypart/BP = X
+		var/damage_text
+		//skyrat edit
+		if(BP.is_disabled() != BODYPART_DISABLED_WOUND) // skip if it's disabled by a wound (cuz we'll be able to see the bone sticking out!)
+			if(!(BP.get_damage(include_stamina = FALSE) >= BP.max_damage)) //we don't care if it's stamcritted
+				damage_text = "limp and lifeless"
+			else
+				damage_text = (BP.brute_dam >= BP.burn_dam) ? BP.heavy_brute_msg : BP.heavy_burn_msg
+			msg += "<B>[capitalize(t_his)] [BP.name] is [damage_text]!</B>\n"
+		//
+
+	//stores missing limbs
+	var/l_limbs_missing = 0
+	var/r_limbs_missing = 0
+	for(var/t in missing)
+		var/should_msg = "<B>[capitalize(t_his)] [parse_zone(t)] is missing!</B>\n"
+		if(t==BODY_ZONE_HEAD)
+			should_msg = "<span class='deadsay'><B>[t_His] [parse_zone(t)] is missing!</B></span>\n"
+		else if(t == BODY_ZONE_L_ARM || t == BODY_ZONE_L_LEG || t == BODY_ZONE_PRECISE_L_FOOT || t == BODY_ZONE_PRECISE_R_FOOT)
+			l_limbs_missing++
+		else if(t == BODY_ZONE_R_ARM || t == BODY_ZONE_R_LEG || t == BODY_ZONE_PRECISE_L_HAND || t == BODY_ZONE_PRECISE_R_HAND)
+			r_limbs_missing++
+		
+		for(var/datum/wound/L in all_wounds)
+			if(L.severity == WOUND_SEVERITY_PERMANENT)
+				if((L.fake_body_zone == t) || (L.fake_body_zone == SSquirks.bodypart_child_to_parent[t]))
+					should_msg = null
+		
+		if(SSquirks.bodypart_child_to_parent[t])
+			if(SSquirks.bodypart_child_to_parent[t] in missing)
+				should_msg = null
+
+		if(should_msg)
+			msg += should_msg
+
+	if(l_limbs_missing >= 2 && r_limbs_missing == 0)
+		msg += "[t_He] look[p_s()] all right now.\n"
+	else if(l_limbs_missing == 0 && r_limbs_missing >= 4)
+		msg += "[t_He] really keeps to the left.\n"
+	else if(l_limbs_missing >= 4 && r_limbs_missing >= 4)
+		msg += "[t_He] [p_do()]n't seem all there.\n"
 	var/temp = getBruteLoss()
 	if(!(user == src && src.hal_screwyhud == SCREWYHUD_HEALTHY)) //fake healthy
 		if(temp)
@@ -77,6 +136,23 @@
 
 	if(pulledby && pulledby.grab_state)
 		msg += "[t_He] [t_is] restrained by [pulledby]'s grip.\n"
+	//skyrat edit
+	var/scar_severity = 0
+	for(var/i in all_scars)
+		var/datum/scar/S = i
+		if(istype(S) && S.is_visible(user))
+			scar_severity += S.severity
+
+	switch(scar_severity)
+		if(WOUND_SEVERITY_TRIVIAL)
+			msg += "<span class='smallnotice'><i>[t_He] [t_has] visible scarring, you can look again to take a closer look...</i></span>\n"
+		if(WOUND_SEVERITY_MODERATE to WOUND_SEVERITY_SEVERE)
+			msg += "<span class='notice'><i>[t_He] [t_has] several bad scars, you can look again to take a closer look...</i></span>\n"
+		if(WOUND_SEVERITY_CRITICAL to WOUND_SEVERITY_PERMANENT)
+			msg += "<span class='notice'><b><i>[t_He] [t_has] significantly disfiguring scarring, you can look again to take a closer look...</i></b></span>\n"
+		if(WOUND_SEVERITY_LOSS to INFINITY)
+			msg += "<span class='notice'><b><i>[t_He] [t_is] just absolutely fucked up, you can look again to take a closer look...</i></b></span>\n"
+	//
 
 	if(msg.len)
 		. += "<span class='warning'>[msg.Join("")]</span>"
@@ -114,3 +190,26 @@
 				. += "[t_He] look[p_s()] ecstatic."
 	SEND_SIGNAL(src, COMSIG_PARENT_EXAMINE, user, .)
 	. += "*---------*</span>"
+
+//skyrat edit
+/mob/living/carbon/examine_more(mob/user)
+	if(!all_scars || !all_scars.len || (src == user && HAS_TRAIT(user, TRAIT_SCREWY_CHECKSELF)))
+		return ..()
+
+	var/list/visible_scars
+	for(var/i in all_scars)
+		var/datum/scar/S = i
+		if(istype(S) && S.is_visible(user))
+			LAZYADD(visible_scars, S)
+
+	if(!visible_scars)
+		return ..()
+
+	var/msg = list("<span class='notice'><i>You examine [src] closer, and note the following...</i></span>")
+	for(var/i in visible_scars)
+		var/datum/scar/S = i
+		var/scar_text = S.get_examine_description(user)
+		if(scar_text)
+			msg += "[scar_text]"
+
+	return msg

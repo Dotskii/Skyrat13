@@ -1279,7 +1279,22 @@ GLOBAL_LIST_EMPTY(custom_outfits) //Admin created outfits
 	if(!check_rights(R_ADMIN) || !check_rights(R_FUN))
 		return
 
-	var/list/punishment_list = list(ADMIN_PUNISHMENT_PIE, ADMIN_PUNISHMENT_CUSTOM_PIE, ADMIN_PUNISHMENT_FIREBALL, ADMIN_PUNISHMENT_LIGHTNING, ADMIN_PUNISHMENT_BRAINDAMAGE, ADMIN_PUNISHMENT_BSA, ADMIN_PUNISHMENT_GIB, ADMIN_PUNISHMENT_SUPPLYPOD_QUICK, ADMIN_PUNISHMENT_SUPPLYPOD, ADMIN_PUNISHMENT_MAZING, ADMIN_PUNISHMENT_ROD)
+	var/list/punishment_list = list(ADMIN_PUNISHMENT_PIE,
+								ADMIN_PUNISHMENT_CUSTOM_PIE,
+								ADMIN_PUNISHMENT_FIREBALL,
+								ADMIN_PUNISHMENT_LIGHTNING,
+								ADMIN_PUNISHMENT_BRAINDAMAGE,
+								ADMIN_PUNISHMENT_BSA,
+								ADMIN_PUNISHMENT_GIB,
+								ADMIN_PUNISHMENT_SUPPLYPOD_QUICK,
+								ADMIN_PUNISHMENT_SUPPLYPOD,
+								ADMIN_PUNISHMENT_MAZING,
+								ADMIN_PUNISHMENT_ROD,
+								ADMIN_PUNISHMENT_CRACK,
+								ADMIN_PUNISHMENT_BLEED,
+								ADMIN_PUNISHMENT_PERFORATE,
+								ADMIN_PUNISHMENT_NUGGET,
+								ADMIN_PUNISHMENT_SCARIFY)
 
 	var/punishment = input("Choose a punishment", "DIVINE SMITING") as null|anything in punishment_list
 
@@ -1357,6 +1372,54 @@ GLOBAL_LIST_EMPTY(custom_outfits) //Admin created outfits
 					if(amount)
 						A.reagents.add_reagent(chosen_id, amount)
 						A.splat(target)
+		//skyrat edit punishments
+		if(ADMIN_PUNISHMENT_CRACK)
+			if(!iscarbon(target))
+				to_chat(usr,"<span class='warning'>This must be used on a carbon mob.</span>")
+				return
+			var/mob/living/carbon/C = target
+			for(var/obj/item/bodypart/squish_part in C.bodyparts)
+				var/type_wound = pick(list(/datum/wound/blunt/critical, /datum/wound/blunt/severe, /datum/wound/blunt/critical, /datum/wound/blunt/severe, /datum/wound/blunt/moderate))
+				squish_part.force_wound_upwards(type_wound, smited=TRUE)
+		if(ADMIN_PUNISHMENT_BLEED)
+			if(!iscarbon(target))
+				to_chat(usr,"<span class='warning'>This must be used on a carbon mob.</span>")
+				return
+			var/mob/living/carbon/C = target
+			for(var/obj/item/bodypart/slice_part in C.bodyparts)
+				var/type_wound = pick(list(/datum/wound/slash/severe, /datum/wound/slash/moderate))
+				slice_part.force_wound_upwards(type_wound, smited=TRUE)
+				type_wound = pick(list(/datum/wound/slash/critical, /datum/wound/slash/severe, /datum/wound/slash/moderate))
+				slice_part.force_wound_upwards(type_wound, smited=TRUE)
+				type_wound = pick(list(/datum/wound/slash/critical, /datum/wound/slash/severe))
+				slice_part.force_wound_upwards(type_wound, smited=TRUE)
+		if(ADMIN_PUNISHMENT_PERFORATE)
+			if(!iscarbon(target))
+				to_chat(usr,"<span class='warning'>This must be used on a carbon mob.</span>")
+				return
+			var/mob/living/carbon/C = target
+			for(var/obj/item/bodypart/slice_part in C.bodyparts)
+				var/type_wound = pick(list(/datum/wound/pierce/severe, /datum/wound/slash/moderate))
+				slice_part.force_wound_upwards(type_wound, smited=TRUE)
+				type_wound = pick(list(/datum/wound/pierce/critical, /datum/wound/slash/severe, /datum/wound/slash/moderate))
+				slice_part.force_wound_upwards(type_wound, smited=TRUE)
+				type_wound = pick(list(/datum/wound/slash/critical, /datum/wound/slash/severe))
+		if(ADMIN_PUNISHMENT_NUGGET)
+			if(!iscarbon(target))
+				to_chat(usr,"<span class='warning'>This must be used on a carbon mob.</span>")
+				return
+			var/mob/living/carbon/C = target
+			for(var/obj/item/bodypart/BP in C.bodyparts)
+				if(BP.body_zone in LIMB_BODYPARTS)
+					BP.dismember(BRUTE)
+		if(ADMIN_PUNISHMENT_SCARIFY)
+			if(!iscarbon(target))
+				to_chat(usr,"<span class='warning'>This must be used on a carbon mob.</span>")
+				return
+			var/mob/living/carbon/C = target
+			C.generate_fake_scars(rand(1, 4))
+			to_chat(C, "<span class='warning'>You feel your body grow jaded and torn...</span>")
+		//
 
 	punish_log(target, punishment)
 

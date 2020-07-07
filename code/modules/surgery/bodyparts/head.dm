@@ -1,5 +1,5 @@
 /obj/item/bodypart/head
-	name = BODY_ZONE_HEAD
+	name = "head" //skyrat edit
 	desc = "Didn't make sense not to live for fun, your brain gets smart but your head gets dumb."
 	icon = 'icons/mob/human_parts.dmi'
 	icon_state = "default_human_head"
@@ -12,7 +12,7 @@
 	px_x = 0
 	px_y = -8
 	stam_damage_coeff = 1
-	max_stamina_damage = 0 //Setting this to 0 since this has the same exact effects as the chest when disabled
+	max_stamina_damage = 100
 
 	var/mob/living/brain/brainmob = null //The current occupant.
 	var/obj/item/organ/brain/brain = null //The brain organ
@@ -34,6 +34,11 @@
 	var/lip_color = "white"
 	//If the head is a special sprite
 	var/custom_head
+	//skyrat edit
+	wound_resistance = 10
+	specific_locations = list("left eyebrow", "cheekbone", "neck", "throat", "jawline", "entire face")
+	scars_covered_by_clothes = FALSE
+	//
 
 /obj/item/bodypart/head/can_dismember(obj/item/I)
 	if(!((owner.stat == DEAD) || owner.InFullCritical()))

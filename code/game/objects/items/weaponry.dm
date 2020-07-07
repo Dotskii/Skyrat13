@@ -65,7 +65,7 @@ for further reading, please see: https://github.com/tgstation/tgstation/pull/301
 	w_class = WEIGHT_CLASS_NORMAL
 	attack_verb = list("attacked", "slashed", "stabbed", "sliced", "torn", "ripped", "diced", "cut")
 	block_chance = 50
-	sharpness = IS_SHARP
+	sharpness = SHARP_EDGED
 	max_integrity = 200
 	armor = list("melee" = 0, "bullet" = 0, "laser" = 0, "energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 100, "acid" = 50)
 	resistance_flags = FIRE_PROOF
@@ -114,7 +114,10 @@ for further reading, please see: https://github.com/tgstation/tgstation/pull/301
 	if(ishuman(loc))
 		var/mob/living/carbon/human/H = loc
 		loc.layer = LARGE_MOB_LAYER //NO HIDING BEHIND PLANTS FOR YOU, DICKWEED (HA GET IT, BECAUSE WEEDS ARE PLANTS)
-		H.bleedsuppress = TRUE //AND WE WON'T BLEED OUT LIKE COWARDS
+		//skyrat edit
+		for(var/obj/item/bodypart/BP in H.bodyparts)
+			BP.bleedsuppress = TRUE //AND WE WON'T BLEED OUT LIKE COWARDS
+		//
 		H.adjustStaminaLoss(-50) //CIT CHANGE - AND MAY HE NEVER SUCCUMB TO EXHAUSTION
 	else
 		if(!(flags_1 & ADMIN_SPAWNED_1))
@@ -229,7 +232,7 @@ for further reading, please see: https://github.com/tgstation/tgstation/pull/301
 	hitsound = 'sound/weapons/bladeslice.ogg'
 	attack_verb = list("attacked", "slashed", "stabbed", "sliced", "torn", "ripped", "diced", "cut")
 	block_chance = 50
-	sharpness = IS_SHARP
+	sharpness = SHARP_EDGED
 	max_integrity = 200
 	armor = list("melee" = 0, "bullet" = 0, "laser" = 0, "energy" = 0, "bomb" = 0, "bio" = 0, "rad" = 0, "fire" = 100, "acid" = 50)
 	resistance_flags = FIRE_PROOF
@@ -295,13 +298,33 @@ for further reading, please see: https://github.com/tgstation/tgstation/pull/301
 	lefthand_file = 'icons/mob/inhands/equipment/shields_lefthand.dmi'
 	righthand_file = 'icons/mob/inhands/equipment/shields_righthand.dmi'
 	force = 2
-	throwforce = 20 //This is never used on mobs since this has a 100% embed chance.
+	throwforce = 20 //10 + 2 (WEIGHT_CLASS_SMALL) * 9 (EMBEDDED_IMPACT_PAIN_MULTIPLIER) = 28 damage on hit due to guaranteed embedding
 	throw_speed = 4
-	embedding = list("embedded_pain_multiplier" = 4, "embed_chance" = 100, "embedded_fall_chance" = 0)
+	//sKyrat edit
+	embedding = list("pain_mult" = 4, "embed_chance" = 100, "fall_chance" = 0, "embed_chance_turf_mod" = 15)
+	armour_penetration = 40
+	//
 	w_class = WEIGHT_CLASS_SMALL
-	sharpness = IS_SHARP
+	sharpness = SHARP_POINTY
 	custom_materials = list(/datum/material/iron=500, /datum/material/glass=500)
 	resistance_flags = FIRE_PROOF
+
+//skyrat edit
+/obj/item/throwing_star/stamina
+	name = "shock throwing star"
+	desc = "An aerodynamic disc designed to cause excruciating pain when stuck inside fleeing targets, hopefully without causing fatal harm."
+	throwforce = 5
+	sharpness = SHARP_NONE
+	embedding = list("pain_chance" = 5, "embed_chance" = 100, "fall_chance" = 0, "jostle_chance" = 10, "pain_stam_pct" = 0.8, "jostle_pain_mult" = 3)
+
+/obj/item/throwing_star/toy
+	name = "toy throwing star"
+	desc = "An aerodynamic disc strapped with adhesive for sticking to people, good for playing pranks and getting yourself killed by security."
+	force = 0
+	throwforce = 0
+	sharpness = SHARP_NONE
+	embedding = list("pain_mult" = 0, "jostle_pain_mult" = 0, "embed_chance" = 100, "fall_chance" = 0)
+//
 
 /obj/item/switchblade
 	name = "switchblade"
@@ -335,7 +358,7 @@ for further reading, please see: https://github.com/tgstation/tgstation/pull/301
 		icon_state = extended_icon_state
 		attack_verb = list("slashed", "stabbed", "sliced", "torn", "ripped", "diced", "cut")
 		hitsound = 'sound/weapons/bladeslice.ogg'
-		sharpness = IS_SHARP
+		sharpness = SHARP_EDGED
 	else
 		force = initial(force)
 		w_class = WEIGHT_CLASS_SMALL
@@ -343,7 +366,7 @@ for further reading, please see: https://github.com/tgstation/tgstation/pull/301
 		icon_state = retracted_icon_state
 		attack_verb = list("stubbed", "poked")
 		hitsound = 'sound/weapons/genhit.ogg'
-		sharpness = IS_BLUNT
+		sharpness = SHARP_NONE
 
 /obj/item/switchblade/suicide_act(mob/user)
 	user.visible_message("<span class='suicide'>[user] is slitting [user.p_their()] own throat with [src]! It looks like [user.p_theyre()] trying to commit suicide!</span>")
@@ -444,7 +467,7 @@ for further reading, please see: https://github.com/tgstation/tgstation/pull/301
 	throwforce = 0
 	throw_range = 0
 	throw_speed = 0
-	sharpness = IS_SHARP
+	sharpness = SHARP_EDGED
 	attack_verb = list("sawed", "torn", "cut", "chopped", "diced")
 	hitsound = 'sound/weapons/chainsawhit.ogg'
 	total_mass = TOTAL_MASS_HAND_REPLACEMENT
@@ -557,6 +580,9 @@ for further reading, please see: https://github.com/tgstation/tgstation/pull/301
 	righthand_file = 'icons/mob/inhands/weapons/melee_righthand.dmi'
 	force = 10
 	throwforce = 12
+	//skyrat edit
+	wound_bonus = -10
+	//
 	attack_verb = list("beat", "smacked")
 	custom_materials = list(/datum/material/wood = MINERAL_MATERIAL_AMOUNT * 3.5)
 	w_class = WEIGHT_CLASS_BULKY
@@ -608,7 +634,10 @@ for further reading, please see: https://github.com/tgstation/tgstation/pull/301
 		homerun_ready = 0
 		return
 	else if(!target.anchored)
-		target.throw_at(throw_target, rand(1,2), 7, user)
+		//skyrat edit peepee poopoo
+		var/whack_speed = (prob(60) ? 1 : 4)
+		target.throw_at(throw_target, rand(1, 2), whack_speed, user) // sorry friends, 7 speed batting caused wounds to absolutely delete whoever you knocked your target into (and said target)
+		//
 
 /obj/item/melee/baseball_bat/ablative
 	name = "metal baseball bat"

@@ -176,6 +176,22 @@ GLOBAL_LIST_INIT(shove_disarming_types, typecacheof(list(
 #define EMBED_THROWSPEED_THRESHOLD				4	//The minimum value of an item's throw_speed for it to embed (Unless it has embedded_ignore_throwspeed_threshold set to 1)
 #define EMBEDDED_UNSAFE_REMOVAL_PAIN_MULTIPLIER 8	//Coefficient of multiplication for the damage the item does when removed without a surgery (this*item.w_class)
 #define EMBEDDED_UNSAFE_REMOVAL_TIME			150	//A Time in ticks, total removal time = (this/item.w_class)
+//skyrat edit
+#define EMBEDDED_JOSTLE_CHANCE					5	//Chance for embedded objects to cause pain every time they move (jostle)
+#define EMBEDDED_JOSTLE_PAIN_MULTIPLIER			1	//Coefficient of multiplication for the damage the item does while
+#define EMBEDDED_PAIN_STAM_PCT					0.0	//This percentage of all pain will be dealt as stam damage rather than brute (0-1)
+
+#define EMBED_HARMLESS list("pain_mult" = 0, "jostle_pain_mult" = 0, "ignore_throwspeed_threshold" = TRUE)
+#define EMBED_HARMLESS_SUPERIOR list("pain_mult" = 0, "jostle_pain_mult" = 0, "ignore_throwspeed_threshold" = TRUE, "embed_chance" = 100, "fall_chance" = 0.1)
+#define EMBED_POINTY list("ignore_throwspeed_threshold" = TRUE)
+#define EMBED_POINTY_SUPERIOR list("embed_chance" = 100, "ignore_throwspeed_threshold" = TRUE)
+
+#define SUPPRESSED_NONE 0
+#define SUPPRESSED_QUIET 1 ///standard suppressed
+#define SUPPRESSED_VERY 2 /// no message
+
+#define NICE_SHOT_RICOCHET_BONUS	10			//if the shooter has the NICE_SHOT trait and they fire a ricocheting projectile, add this to the ricochet chance and auto aim angle
+//
 
 //Gun weapon weight
 #define WEAPON_LIGHT 1
@@ -194,9 +210,11 @@ GLOBAL_LIST_INIT(shove_disarming_types, typecacheof(list(
 #define GUN_AIMING_TIME (2 SECONDS)
 
 //Object/Item sharpness
-#define IS_BLUNT			0
-#define IS_SHARP			1
-#define IS_SHARP_ACCURATE	2
+//skyrat edit stuff
+#define SHARP_NONE 0
+#define SHARP_EDGED 1
+#define SHARP_POINTY 2
+//
 
 //His Grace.
 #define HIS_GRACE_SATIATED 0 //He hungers not. If bloodthirst is set to this, His Grace is asleep.
@@ -228,7 +246,6 @@ GLOBAL_LIST_INIT(shove_disarming_types, typecacheof(list(
 #define BODY_ZONE_R_ARM		"r_arm"
 #define BODY_ZONE_L_LEG		"l_leg"
 #define BODY_ZONE_R_LEG		"r_leg"
-
 #define BODY_ZONE_PRECISE_EYES		"eyes"
 #define BODY_ZONE_PRECISE_MOUTH		"mouth"
 #define BODY_ZONE_PRECISE_GROIN		"groin"
