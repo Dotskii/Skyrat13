@@ -349,7 +349,22 @@
 	if (world.time < registered_account.withdrawDelay)
 		registered_account.bank_card_talk("<span class='warning'>ERROR: UNABLE TO LOGIN DUE TO SCHEDULED MAINTENANCE. MAINTENANCE IS SCHEDULED TO COMPLETE IN [(registered_account.withdrawDelay - world.time)/10] SECONDS.</span>", TRUE)
 		return
-
+	
+	//Skyrat change - Taking money from an ID requires credentials
+	if(registered_account.account_id)
+		var/accountnum = input(usr, "Input the account ID for the selected account", "Security measures", 000000) as num
+		if(istext(accountnum))
+			accountnum = text2num(accountnum)
+		if(accountnum == registered_account.account_id)
+			if(registered_account.account_password)
+				var/accountpassword = input(usr, "Input the account password for the selected account", "Security measures", "admin") as text
+				if(accountpassword != registered_account.account_password)
+					registered_account.bank_card_talk("<span class='warning'>ACCESS DENIED. WITHDRAWAL CANCELLED.</span>", TRUE)
+					return FALSE
+		else
+			registered_account.bank_card_talk("<span class='warning'>ACCESS DENIED. WITHDRAWAL CANCELLED.</span>", TRUE)
+			return FALSE
+	//
 	var/amount_to_remove =  input(user, "How much do you want to withdraw? Current Balance: [registered_account.account_balance]", "Withdraw Funds", 5) as num|null
 
 	if(!amount_to_remove || amount_to_remove < 0)
