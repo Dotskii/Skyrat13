@@ -47,14 +47,11 @@
 	if(user != C)
 		user.visible_message("[user] forces [C] to apply [src]... Black tendrils entangle and reinforce [C.p_them()]!")
 	else
-		user.visible_message(user, "<span class='notice'>[C] starts applying \the [src] on themselves, disgusting tendrils enthralling them...","<span class='notice'>You start to smear [src] on yourself. The disgusting tendrils will hold you together and allow you to keep moving, but for how long?</span>")
-	if(!do_mob(user, target, (user == target ? 1.5 SECONDS : 0.5 SECONDS)))
-		return
+		user.visible_message(user, "<span class='notice'>[C] starts applies \the [src] on themselves, disgusting tendrils enthralling them...","<span class='notice'>You smear [src] on yourself. The disgusting tendrils will hold you together and allow you to keep moving, but for how long?</span>")
 	if(user != C)
 		SSblackbox.record_feedback("nested tally", "hivelord_core", 1, list("[type]", "used", "other"))
 	else
 		SSblackbox.record_feedback("nested tally", "hivelord_core", 1, list("[type]", "used", "self"))
-	if(!QDELETED(src))
-		C.apply_status_effect(/datum/status_effect/regenerative_core)
+	C.revive(TRUE, FALSE)
 	user.log_message("[user] used [src] to heal [C == user ? "[C.p_them()]self" : C]! Wake up Mr. Miner... Wake up, and smell the ash storms...", LOG_ATTACK, color="green") //Logging for 'old' style legion core use, when clicking on a sprite of yourself or another.
 	qdel(src)

@@ -1,6 +1,6 @@
 //seva shit
 /obj/item/clothing/suit/hooded/explorer/seva
-	armor = list("melee" = 10, "bullet" = 10, "laser" = 10, "energy" = 10, "bomb" = 35, "bio" = 50, "rad" = 25, "fire" = 100, "acid" = 25)
+	armor = list("melee" = 15, "bullet" = 10, "laser" = 10, "energy" = 10, "bomb" = 35, "bio" = 50, "rad" = 25, "fire" = 100, "acid" = 25)
 	icon = 'modular_skyrat/icons/obj/clothing/suits.dmi'
 	icon_state = "seva"
 	mob_overlay_icon = 'modular_skyrat/icons/mob/clothing/suit.dmi'
@@ -23,7 +23,7 @@
 	)
 
 /obj/item/clothing/head/hooded/explorer/seva
-	armor = list("melee" = 10, "bullet" = 10, "laser" = 10, "energy" = 10, "bomb" = 35, "bio" = 50, "rad" = 25, "fire" = 100, "acid" = 25)
+	armor = list("melee" = 15, "bullet" = 10, "laser" = 10, "energy" = 10, "bomb" = 35, "bio" = 50, "rad" = 25, "fire" = 100, "acid" = 25)
 	icon = 'modular_skyrat/icons/obj/clothing/hats.dmi'
 	icon_state = "seva"
 	mob_overlay_icon = 'modular_skyrat/icons/mob/clothing/head.dmi'
@@ -47,11 +47,11 @@
 
 /obj/item/clothing/suit/hooded/explorer/seva/Initialize()
 	. = ..()
-	AddComponent(/datum/component/armor_plate, 2, /obj/item/stack/sheet/animalhide/goliath_hide, list("melee" = 5))
+	AddComponent(/datum/component/armor_plate, 3, /obj/item/stack/sheet/animalhide/goliath_hide, list("melee" = 5))
 
 /obj/item/clothing/head/hooded/explorer/seva/Initialize()
 	. = ..()
-	AddComponent(/datum/component/armor_plate, 2, /obj/item/stack/sheet/animalhide/goliath_hide, list("melee" = 5))
+	AddComponent(/datum/component/armor_plate, 3, /obj/item/stack/sheet/animalhide/goliath_hide, list("melee" = 5))
 
 /obj/item/clothing/mask/gas/seva
 	icon = 'modular_skyrat/icons/obj/clothing/masks.dmi'
@@ -77,7 +77,7 @@
 
 //exosuit shit
 /obj/item/clothing/suit/hooded/explorer/exo
-	armor = list("melee" = 45, "bullet" = 5, "laser" = 5, "energy" = 5, "bomb" = 40, "bio" = 25, "rad" = 10, "fire" = 0, "acid" = 0)
+	armor = list("melee" = 55, "bullet" = 5, "laser" = 5, "energy" = 5, "bomb" = 40, "bio" = 25, "rad" = 10, "fire" = 0, "acid" = 0)
 	icon = 'modular_skyrat/icons/obj/clothing/suits.dmi'
 	icon_state = "exo"
 	mob_overlay_icon = 'modular_skyrat/icons/mob/clothing/suit.dmi'
@@ -100,7 +100,7 @@
 	)
 
 /obj/item/clothing/head/hooded/explorer/exo
-	armor = list("melee" = 45, "bullet" = 5, "laser" = 5, "energy" = 5, "bomb" = 40, "bio" = 25, "rad" = 10, "fire" = 0, "acid" = 0)
+	armor = list("melee" = 55, "bullet" = 5, "laser" = 5, "energy" = 5, "bomb" = 40, "bio" = 25, "rad" = 10, "fire" = 0, "acid" = 0)
 	icon = 'modular_skyrat/icons/obj/clothing/hats.dmi'
 	icon_state = "exo"
 	mob_overlay_icon = 'modular_skyrat/icons/mob/clothing/head.dmi'
@@ -146,12 +146,12 @@
 
 //dora the explorer suit
 /obj/item/clothing/suit/hooded/explorer
-	armor = list("melee" = 20, "bullet" = 20, "laser" = 20, "energy" = 20, "bomb" = 50, "bio" = 100, "rad" = 50, "fire" = 50, "acid" = 50)
+	armor = list("melee" = 30, "bullet" = 20, "laser" = 20, "energy" = 20, "bomb" = 50, "bio" = 100, "rad" = 50, "fire" = 50, "acid" = 50)
 	allowed = list(/obj/item/flashlight, /obj/item/tank/internals, /obj/item/resonator, /obj/item/mining_scanner, /obj/item/t_scanner/adv_mining_scanner, /obj/item/gun/energy/kinetic_accelerator, /obj/item/pickaxe, /obj/item/gun/energy/plasmacutter)
 	mutantrace_variation = STYLE_DIGITIGRADE|STYLE_SNEK_TAURIC|STYLE_PAW_TAURIC|STYLE_NO_ANTHRO_ICON
 
 /obj/item/clothing/head/hooded/explorer
-	armor = list("melee" = 20, "bullet" = 20, "laser" = 20, "energy" = 20, "bomb" = 50, "bio" = 100, "rad" = 50, "fire" = 50, "acid" = 50)
+	armor = list("melee" = 30, "bullet" = 20, "laser" = 20, "energy" = 20, "bomb" = 50, "bio" = 100, "rad" = 50, "fire" = 50, "acid" = 50)
 	flags_inv = HIDEEARS
 	mutantrace_variation = STYLE_DIGITIGRADE|STYLE_SNEK_TAURIC|STYLE_PAW_TAURIC|STYLE_NO_ANTHRO_ICON
 
@@ -215,26 +215,22 @@
 	tint = 1
 	glass_colour_type = /datum/client_colour/glass_colour/lightgreen
 
-/* this is quite buggy and doesn't work well
 /obj/item/clothing/glasses/hud/mining/fauna
-	name = "ore and fauna scanner HUD"
-	desc = "Essentially a worn version of the advanced mining scanner, but also allows you to scan the health of fauna."
-	hud_type = DATA_HUD_MEDICAL_BASIC
+	name = "fauna scanner HUD"
+	desc = "A worn health scanner HUD that allows you to scan the health of fauna."
+	hud_type = DATA_HUD_MEDICAL_FAUNA
 	storehud = TRUE
 
-/obj/item/clothing/glasses/hud/mining/fauna/process()
-	..()
-	if(ourhud && wearer)
-		for(var/mob/M in view(wearer, 15))
-			if(!("mining" in M.faction))
-				ourhud.remove_from_single_hud(wearer, M) //very hacky solution so only mining mob healths display
+/obj/item/clothing/glasses/hud/mining/fauna/prescription
+	name = "prescription fauna scanner hud"
+	desc = "A worn health scanner HUD that allows you to scan the health of fauna. Helps the nearsighted."
+	vision_correction = 1
 
 /obj/item/clothing/glasses/hud/mining/fauna/sunglasses
-	name = "sunglasses ore and fauna scanner HUD"
+	name = "sunglasses fauna scanner HUD"
 	desc = "Mine with style! And apply a beating to goliaths with precision."
 	icon_state = "sunhudmine"
 	darkness_view = 1
 	flash_protect = 1
 	tint = 1
 	glass_colour_type = /datum/client_colour/glass_colour/lightgreen
-*/

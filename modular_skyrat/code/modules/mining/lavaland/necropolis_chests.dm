@@ -375,7 +375,6 @@
 	item_state = "praetor"
 	helmettype = /obj/item/clothing/head/helmet/space/hardsuit/deathsquad/praetor
 	slowdown = 0
-	mutantrace_variation = STYLE_DIGITIGRADE | STYLE_NO_ANTHRO_ICON
 	resistance_flags = LAVA_PROOF | FIRE_PROOF | ACID_PROOF
 
 /obj/item/clothing/head/helmet/space/hardsuit/deathsquad/praetor
@@ -387,7 +386,6 @@
 	icon_state = "praetor"
 	mob_overlay_icon = 'modular_skyrat/icons/mob/clothing/head.dmi'
 	anthro_mob_worn_overlay  = 'modular_skyrat/icons/mob/clothing/head_muzzled.dmi'
-	mutantrace_variation = STYLE_MUZZLE | STYLE_NO_ANTHRO_ICON
 	resistance_flags = LAVA_PROOF | FIRE_PROOF | ACID_PROOF
 
 //berserk rune
@@ -1122,8 +1120,8 @@
 	lefthand_file = 'modular_skyrat/icons/mob/inhands/weapons/swords_lefthand.dmi'
 	righthand_file = 'modular_skyrat/icons/mob/inhands/weapons/swords_righthand.dmi'
 	w_class = WEIGHT_CLASS_BULKY
-	force = 22 //buff because 15 just doesn't cut it for megafauna loot... hehe "cut it"
-	throwforce = 10
+	force = 20 //buff because 15 just doesn't cut it for megafauna loot... hehe "cut it"
+	throwforce = 15
 	block_chance = 20 //again, slight buff
 	armour_penetration = 200 //the armor penetration is really what makes this unique and actually worth it so boomp it
 	hitsound = 'modular_skyrat/sound/sif/sif_slash.ogg'
