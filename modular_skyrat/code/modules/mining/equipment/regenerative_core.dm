@@ -32,7 +32,7 @@
 		apply_healing_core(user, user)
 
 /obj/item/organ/regenerative_core/proc/apply_healing_core(atom/target, mob/user)
-	if(!user || QDELETED(src))
+	if(!user || !target || QDELETED(src))
 		return
 	if(inert)
 		to_chat(user, "<span class='notice'>[src] has decayed and can no longer be used to heal.</span>")
