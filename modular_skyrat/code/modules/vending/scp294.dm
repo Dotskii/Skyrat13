@@ -11,7 +11,6 @@
 	var/list/power_chems = list(
 		/datum/reagent/romerol,
 		/datum/reagent/medicine/adminordrazine,
-
 	)
 
 /obj/machinery/scp294/attack_hand(mob/living/user)
