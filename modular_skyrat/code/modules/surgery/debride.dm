@@ -13,7 +13,7 @@
 	if(..())
 		var/obj/item/bodypart/targeted_bodypart = target.get_bodypart(user.zone_selected)
 		if(targeted_bodypart)
-			if(targeted_bodypart.germ_level >= INFECTION_LEVEL_ONE)
+			if(targeted_bodypart.germ_level)
 				return TRUE
 			else
 				for(var/i in targeted_bodypart.wounds)
