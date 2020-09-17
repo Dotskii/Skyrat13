@@ -6,6 +6,7 @@
 	var/id = "effect" //Used for screen alerts.
 	var/duration = -1 //How long the status effect lasts in DECISECONDS. Enter -1 for an effect that never ends unless removed through some means.
 	var/tick_interval = 10 //How many deciseconds between ticks, approximately. Leave at 10 for every second.
+	var/next_tick //The scheduled time for the next tick.
 	var/mob/living/owner //The mob affected by the status effect.
 	var/on_remove_on_mob_delete = FALSE //if we call on_remove() when the mob is deleted
 	var/examine_text //If defined, this text will appear when the mob is examined - to use he, she etc. use "SUBJECTPRONOUN" and replace it in the examines themselves
@@ -31,11 +32,12 @@
 		return
 	if(duration != -1)
 		duration = world.time + duration
-	tick_interval = world.time + tick_interval
-	if(alert_type)
+	next_tick = world.time + tick_interval
+	if(alert_type && istype(owner) && id) //skyrat edit
 		var/obj/screen/alert/status_effect/A = owner.throw_alert(id, alert_type)
-		A.attached_effect = src //so the alert can reference us, if it needs to
-		linked_alert = A //so we can reference the alert, if we need to
+		if(istype(A))
+			A.attached_effect = src //so the alert can reference us, if it needs to
+			linked_alert = A //so we can reference the alert, if we need to
 	START_PROCESSING(SSstatus_effects, src)
 	return TRUE
 
@@ -52,9 +54,9 @@
 	if(!owner)
 		qdel(src)
 		return
-	if(tick_interval < world.time)
+	if(next_tick < world.time)
 		tick()
-		tick_interval = world.time + initial(tick_interval)
+		next_tick = world.time + tick_interval
 	if(duration != -1 && duration < world.time)
 		qdel(src)
 
@@ -221,7 +223,7 @@
 			threshold_crossed = FALSE //resets threshold effect if we fall below threshold so threshold effect can trigger again
 			on_threshold_drop()
 		if(stacks_added > 0)
-			tick_interval += delay_before_decay //refreshes time until decay
+			next_tick += delay_before_decay //refreshes time until decay
 		stacks = min(stacks, max_stacks)
 		status_overlay.icon_state = "[overlay_state][stacks]"
 		status_underlay.icon_state = "[underlay_state][stacks]"
@@ -278,3 +280,8 @@
 /datum/status_effect/grouped/before_remove(source)
 	sources -= source
 	return !length(sources)
+
+//skyrat meme
+//do_after modifier!
+/datum/status_effect/proc/interact_speed_modifier()
+	return 1

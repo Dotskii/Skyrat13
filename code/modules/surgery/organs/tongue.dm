@@ -1,3 +1,4 @@
+/* moved to modular_skyrat
 #define TONGUE_MAX_HEALTH 60
 
 /obj/item/organ/tongue
@@ -33,7 +34,8 @@
 		/datum/language/shadowtongue, //Skyrat change - shadowpeople language
 		/datum/language/solcommon, //Skyrat change - sol common blah blah
 		/datum/language/sylvan, //Skyrat change - plantpeople langauge
-		/datum/language/technorussian //Skyrat change - russian stereotype language
+		/datum/language/technorussian, //Skyrat change - russian stereotype language
+		/datum/language/newera/sergal //Newera change - sergal language
 	))
 	healing_factor = STANDARD_ORGAN_HEALING*5 //Fast!!
 	decay_factor = STANDARD_ORGAN_DECAY/2
@@ -262,6 +264,7 @@
 	name = "robotic voicebox"
 	desc = "A voice synthesizer that can interface with organic lifeforms."
 	status = ORGAN_ROBOTIC
+	organ_flags = ORGAN_NO_SPOIL
 	icon_state = "tonguerobot"
 	say_mod = "states"
 	attack_verb = list("beeped", "booped")
@@ -321,3 +324,4 @@
 	desc = "A voice synthesizer used by IPCs to smoothly interface with organic lifeforms."
 	electronics_magic = FALSE
 	organ_flags = ORGAN_SYNTHETIC
+*/

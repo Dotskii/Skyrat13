@@ -1,3 +1,4 @@
+/* moved to modular_skyrat
 #define LIMBGROWER_MAIN_MENU       1
 #define LIMBGROWER_CATEGORY_MENU   2
 #define LIMBGROWER_CHEMICAL_MENU   3
@@ -86,7 +87,7 @@
 			screen = text2num(href_list["menu"])
 
 		if(href_list["category"])
-			selected_category = href_list["category"]
+			selected_category = html_encode(href_list["category"]) //new era -- non-ideal fix for href exploit (ideal would be to check if a valid category, but 'categories' is an assoc list and yada yada lag etc)
 
 		if(href_list["disposeI"])  //Get rid of a reagent incase you add the wrong one by mistake
 			reagents.del_reagent(text2path(href_list["disposeI"]))
@@ -233,3 +234,4 @@
 	to_chat(user, "<span class='warning'>A warning flashes onto the screen, stating that safety overrides have been deactivated!</span>")
 	obj_flags |= EMAGGED
 	return TRUE
+*/

@@ -136,6 +136,7 @@
 /*
  * Toy gun: Why isnt this an /obj/item/gun?
  */
+
 /obj/item/toy/gun
 	name = "cap gun"
 	desc = "Looks almost like the real thing! Ages 8 and up. Please recycle in an autolathe when you're out of caps."
@@ -149,29 +150,40 @@
 	w_class = WEIGHT_CLASS_NORMAL
 	custom_materials = list(/datum/material/iron=10, /datum/material/glass=10)
 	attack_verb = list("struck", "pistol whipped", "hit", "bashed")
+	//SKYRAT EDIT BLABLA
+	var/dry_fire = TRUE
+	var/sound/shotsound = sound('sound/weapons/gunshot.ogg')
+	var/infiniteboolet = FALSE
+	var/max_boolet = 7
+	var/shoot_cooldown = 0
+	var/shoot_cooldown_time = 5
+	//
 	var/bullets = 7
 
 /obj/item/toy/gun/examine(mob/user)
 	. = ..()
-	. += "There [bullets == 1 ? "is" : "are"] [bullets] cap\s left."
+	//skyrat edit
+	if(!infiniteboolet)
+		. += "There [bullets == 1 ? "is" : "are"] [bullets] cap\s left."
+	//
 
 /obj/item/toy/gun/attackby(obj/item/toy/ammo/gun/A, mob/user, params)
 
 	if(istype(A, /obj/item/toy/ammo/gun))
-		if (src.bullets >= 7)
+		if (src.bullets >= max_boolet)
 			to_chat(user, "<span class='warning'>It's already fully loaded!</span>")
 			return 1
 		if (A.amount_left <= 0)
 			to_chat(user, "<span class='warning'>There are no more caps!</span>")
 			return 1
-		if (A.amount_left < (7 - src.bullets))
+		if (A.amount_left < (max_boolet - src.bullets))
 			src.bullets += A.amount_left
 			to_chat(user, text("<span class='notice'>You reload [] cap\s.</span>", A.amount_left))
 			A.amount_left = 0
 		else
-			to_chat(user, text("<span class='notice'>You reload [] cap\s.</span>", 7 - src.bullets))
-			A.amount_left -= 7 - src.bullets
-			src.bullets = 7
+			to_chat(user, text("<span class='notice'>You reload [] cap\s.</span>", max_boolet - src.bullets))
+			A.amount_left -= max_boolet - src.bullets
+			src.bullets = max_boolet
 		A.update_icon()
 		return 1
 	else
@@ -179,6 +191,11 @@
 
 /obj/item/toy/gun/afterattack(atom/target as mob|obj|turf|area, mob/user, flag)
 	. = ..()
+	//skyrat edit - no shot sound spam
+	if(shoot_cooldown > world.time)
+		return
+	shoot_cooldown = world.time + shoot_cooldown_time
+	//
 	if (flag)
 		return
 	if (!user.IsAdvancedToolUser())
@@ -186,11 +203,17 @@
 		return
 	src.add_fingerprint(user)
 	if (src.bullets < 1)
-		user.show_message("<span class='warning'>*click*</span>", MSG_AUDIBLE)
-		playsound(src, "gun_dry_fire", 30, 1)
+		//skyrat edit
+		if(dry_fire)
+			user.show_message("<span class='warning'>*click*</span>", MSG_AUDIBLE)
+			playsound(src, "gun_dry_fire", 30, 1)
+		//
 		return
-	playsound(user, 'sound/weapons/gunshot.ogg', 100, 1)
-	src.bullets--
+	playsound(user, shotsound, 100, 1)
+	//skyrat edit
+	if(!infiniteboolet)
+		src.bullets--
+	//
 	user.visible_message("<span class='danger'>[user] fires [src] at [target]!</span>", \
 						"<span class='danger'>You fire [src] at [target]!</span>", \
 						 "<span class='italics'>You hear a gunshot!</span>")
@@ -272,7 +295,7 @@
 			return
 		else
 			to_chat(user, "<span class='notice'>You attach the ends of the two plastic swords, making a single double-bladed toy! You're fake-cool.</span>")
-			var/obj/item/twohanded/dualsaber/toy/newSaber = new /obj/item/twohanded/dualsaber/toy(user.loc)
+			var/obj/item/dualsaber/toy/newSaber = new /obj/item/dualsaber/toy(user.loc)
 			if(hacked) // That's right, we'll only check the "original" "sword".
 				newSaber.hacked = TRUE
 			qdel(W)
@@ -363,7 +386,7 @@
 			return
 		else
 			to_chat(user, "<span class='notice'>You combine the two plastic swords, making a single supermassive toy! You're fake-cool.</span>")
-			new /obj/item/twohanded/dualsaber/hypereutactic/toy(user.loc)
+			new /obj/item/dualsaber/hypereutactic/toy(user.loc)
 			qdel(W)
 			qdel(src)
 	else
@@ -437,40 +460,54 @@
 /*
  * Subtype of Double-Bladed Energy Swords
  */
-/obj/item/twohanded/dualsaber/toy
+/obj/item/dualsaber/toy
 	name = "double-bladed toy sword"
 	desc = "A cheap, plastic replica of TWO energy swords.  Double the fun!"
 	force = 0
 	throwforce = 0
 	throw_speed = 3
 	throw_range = 5
-	force_unwielded = 0
-	force_wielded = 0
+	block_parry_data = null
 	attack_verb = list("attacked", "struck", "hit")
 	total_mass_on = TOTAL_MASS_TOY_SWORD
-	sharpness = IS_BLUNT
+	sharpness = SHARP_NONE
 
-/obj/item/twohanded/dualsaber/toy/run_block(mob/living/owner, atom/object, damage, attack_text, attack_type, armour_penetration, mob/attacker, def_zone, final_block_chance, list/block_return)
+//new era -- fixed toy swords actually dealing 34 damage because of shittily initialized components
+/obj/item/dualsaber/toy/ComponentInitialize()
+	. = ..()
+	var/datum/component/two_handed/C = GetComponent(/datum/component/two_handed)
+	C.force_wielded=0
+	C.force_unwielded=0
+
+/obj/item/dualsaber/toy/run_block(mob/living/owner, atom/object, damage, attack_text, attack_type, armour_penetration, mob/attacker, def_zone, final_block_chance, list/block_return)
+
 	return BLOCK_NONE
 
-/obj/item/twohanded/dualsaber/hypereutactic/toy
+/obj/item/dualsaber/hypereutactic/toy
 	name = "\improper DX Hyper-Euplastic LightSword"
 	desc = "A supermassive toy envisioned to cleave the very fabric of space and time itself in twain. Realistic visuals and sounds! Ages 8 and up."
 	force = 0
 	throwforce = 0
 	throw_speed = 3
 	throw_range = 5
-	force_unwielded = 0
-	force_wielded = 0
+
 	attack_verb = list("attacked", "struck", "hit")
 	total_mass_on = TOTAL_MASS_TOY_SWORD
 	slowdown_wielded = 0
-	sharpness = IS_BLUNT
+	sharpness = SHARP_NONE
 
-/obj/item/twohanded/dualsaber/hypereutactic/toy/run_block(mob/living/owner, atom/object, damage, attack_text, attack_type, armour_penetration, mob/attacker, def_zone, final_block_chance, list/block_return)
+/obj/item/dualsaber/hypereutactic/toy/ComponentInitialize()
+	. = ..()
+	var/datum/component/two_handed/C = GetComponent(/datum/component/two_handed)
+	C.force_wielded=0
+	C.force_unwielded=0
+//new era end
+
+/obj/item/dualsaber/hypereutactic/toy/run_block(mob/living/owner, atom/object, damage, attack_text, attack_type, armour_penetration, mob/attacker, def_zone, final_block_chance, list/block_return)
+
 	return BLOCK_NONE
 
-/obj/item/twohanded/dualsaber/hypereutactic/toy/rainbow
+/obj/item/dualsaber/hypereutactic/toy/rainbow
 	name = "\improper Hyper-Euclidean Reciprocating Trigonometric Zweihander"
 	desc = "A custom-built toy with fancy rainbow lights built-in."
 	hacked = TRUE
@@ -837,12 +874,11 @@ GLOBAL_LIST_INIT(valid_mechtoy_paths, valid_mechtoy_paths())
 	var/obj/item/toy/cards/singlecard/H = new/obj/item/toy/cards/singlecard(user.loc)
 	if(holo)
 		holo.spawned += H // track them leaving the holodeck
-	choice = cards[1]
+	choice = popleft(cards)
 	H.cardname = choice
 	H.parentdeck = src
 	var/O = src
 	H.apply_card_vars(H,O)
-	src.cards -= choice
 	H.pickup(user)
 	user.put_in_hands(H)
 	user.visible_message("[user] draws a card from the deck.", "<span class='notice'>You draw a card from the deck.</span>")

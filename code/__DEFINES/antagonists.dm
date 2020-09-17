@@ -11,6 +11,17 @@
 #define NUKE_RESULT_WRONG_STATION 7
 #define NUKE_RESULT_WRONG_STATION_DEAD 8
 
+//fugitive end results
+#define FUGITIVE_RESULT_BADASS_HUNTER 0
+#define FUGITIVE_RESULT_POSTMORTEM_HUNTER 1
+#define FUGITIVE_RESULT_MAJOR_HUNTER 2
+#define FUGITIVE_RESULT_HUNTER_VICTORY 3
+#define FUGITIVE_RESULT_MINOR_HUNTER 4
+#define FUGITIVE_RESULT_STALEMATE 5
+#define FUGITIVE_RESULT_MINOR_FUGITIVE 6
+#define FUGITIVE_RESULT_FUGITIVE_VICTORY 7
+#define FUGITIVE_RESULT_MAJOR_FUGITIVE 8
+
 #define APPRENTICE_DESTRUCTION "destruction"
 #define APPRENTICE_BLUESPACE "bluespace"
 #define APPRENTICE_ROBELESS "robeless"
@@ -65,6 +76,10 @@
 #define ANTAG_DATUM_BLOODSUCKER			/datum/antagonist/bloodsucker
 #define ANTAG_DATUM_VASSAL				/datum/antagonist/vassal
 //#define ANTAG_DATUM_HUNTER				/datum/antagonist/vamphunter   Disabled for now
+// new era -- infiltrators:
+#define ANTAG_DATUM_INFILTRATOR	/datum/antagonist/infiltrator
+#define ANTAG_DATUM_HIJACKEDAI	/datum/antagonist/hijacked_ai
+// new era end
 
 // BLOODSUCKER
 #define BLOODSUCKER_LEVEL_TO_EMBRACE	3
@@ -78,6 +93,29 @@
 
 //Blob
 #define BLOB_REROLL_TIME 2400 // blob gets a free reroll every X time
-#define BLOB_SPREAD_COST 4
-#define BLOB_ATTACK_REFUND 3 //blob refunds this much if it attacks and doesn't spread also SKYRAT CHANGE FROM 2
-#define BLOB_REFLECTOR_COST 15
+//#define BLOB_SPREAD_COST 4
+#define BLOB_SPREAD_COST 3 //SKYRAT EDIT - BLOB
+//#define BLOB_ATTACK_REFUND 3 //blob refunds this much if it attacks and doesn't spread also SKYRAT CHANGE FROM 2
+#define BLOB_ATTACK_REFUND 1 // Skyrat Edit: Blob attacks cost 2 points. Attacks work by using spread cost, then if it doesn't spread, it gives the blob the attack refund. -3 + 1 = -2. Attacks cost 2 points.
+//#define BLOB_REFLECTOR_COST 15
+#define BLOB_REFLECTOR_COST 5 //SKYRAT EDIT - BLOB
+
+//SKYRAT CHANGES BEGIN
+
+//Objectives-Ambitions Panel
+#define REQUEST_NEW_OBJECTIVE "new_objective"
+#define REQUEST_DEL_OBJECTIVE "del_objective"
+#define REQUEST_WIN_OBJECTIVE "win_objective"
+#define REQUEST_LOSE_OBJECTIVE "lose_objective"
+
+#define CAN_SEE_EXPOITABLE_INFO (1<<0)
+
+//SKYRANT CHANGES END
+
+// New era defines
+#define TGUI_ANTAGLISTING_TEXT(textandformatting...) list(list("text", textandformatting))
+#define TGUI_ANTAGLISTING_BUTTON(propstofeed...) list(list("button", list(propstofeed)))
+#define TGUI_ANTAGLISTING_BR list(list("br"))
+//GLOB.admin_state SHOULD make it safe to do this
+#define TGUI_ANTAGLISTING_HREF_LIST(fake_href_list...) list(admin_token=RawHrefToken())+list(fake_href_list)
+// New era end

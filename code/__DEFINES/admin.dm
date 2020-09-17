@@ -56,6 +56,10 @@
 #define ADMIN_SET_SD_CODE "(<a href='?_src_=holder;[HrefToken(TRUE)];set_selfdestruct_code=1'>SETCODE</a>)"
 #define ADMIN_FULLMONTY_NONAME(user) "[ADMIN_QUE(user)] [ADMIN_PP(user)] [ADMIN_VV(user)] [ADMIN_SM(user)] [ADMIN_FLW(user)] [ADMIN_TP(user)] [ADMIN_INDIVIDUALLOG(user)] [ADMIN_SMITE(user)]"
 #define ADMIN_FULLMONTY(user) "[key_name_admin(user)] [ADMIN_FULLMONTY_NONAME(user)]"
+//SKYRAT CHANGES BEGIN
+#define ADMIN_TPMONTY_NONAME(user) "[ADMIN_QUE(user)] [ADMIN_JMP(user)] [ADMIN_FLW(user)]"
+#define ADMIN_TPMONTY(user) "[key_name_admin(user)] [ADMIN_TPMONTY_NONAME(user)]"
+//SKYRAT CHANGES END
 #define ADMIN_JMP(src) "(<a href='?_src_=holder;[HrefToken(TRUE)];adminplayerobservecoodjump=1;X=[src.x];Y=[src.y];Z=[src.z]'>JMP</a>)"
 #define COORD(src) "[src ? "([src.x],[src.y],[src.z])" : "nonexistent location"]"
 #define AREACOORD(src) "[src ? "[get_area_name(src, TRUE)] ([src.x], [src.y], [src.z])" : "nonexistent location"]"
@@ -74,6 +78,8 @@
 #define ADMIN_PUNISHMENT_MAZING "Puzzle"
 #define ADMIN_PUNISHMENT_PIE "Cream Pie"
 #define ADMIN_PUNISHMENT_CUSTOM_PIE "Custom Cream Pie"
+#define ADMIN_PUNISHMENT_PICKLE "Pickle-ify"
+#define ADMIN_PUNISHMENT_FRY "Fry"
 
 #define AHELP_ACTIVE 1
 #define AHELP_CLOSED 2
@@ -85,5 +91,24 @@
 #define SPAM_TRIGGER_WARNING	5	//Number of identical messages required before the spam-prevention will warn you to stfu
 #define SPAM_TRIGGER_AUTOMUTE	10	//Number of identical messages required before the spam-prevention will automute you
 
-//SKYRAT COLLAR BAN - now no collar
-#define COLLARBAN	"Collar ban" //Pacification but called that so we dont lose our earlier bans
+//SKYRAT defines
+#define COLLARBAN	"Collar ban" //Pacification ban but called that so we dont lose our earlier bans
+#define ADMIN_PUNISHMENT_CRACK ":B:oneless"
+#define ADMIN_PUNISHMENT_BLEED ":B:loodless"
+#define ADMIN_PUNISHMENT_PERFORATE ":B:erforate"
+#define ADMIN_PUNISHMENT_BURN ":B:urn"
+#define ADMIN_PUNISHMENT_INTERNALBLEED ":B:leed Internally"
+#define ADMIN_PUNISHMENT_WARCRIME "War Crime"
+#define ADMIN_PUNISHMENT_INCISIONIFY "Incisionify"
+#define ADMIN_PUNISHMENT_SCARIFY "Scarify"
+#define ADMIN_PUNISHMENT_NUGGET "Nuggetify"
+#define ADMIN_PUNISHMENT_ONE "Metallica - One"
+#define ADMIN_PUNISHMENT_SHRAPNEL "Shrapnellify"
+#define ADMIN_PUNISHMENT_RAYMAN "Raymannify"
+#define ADMIN_PUNISHMENT_EXTREMITIES "No extremities"
+#define ADMIN_PUNISHMENT_HOLLOW "Hollow"
+#define ADMIN_PUNISHMENT_LIVELEAK "Liveleak"
+#define ADMIN_PUNISHMENT_ISIS "ISIS"
+#define ADMIN_PUNISHMENT_MEDIC "Meet the medic"
+#define ADMIN_PUNISHMENT_PAPAJOHNS "Papa Johns"
+#define ADMIN_PUNISHMENT_PHANTOM_PAIN "Phantom Pain"

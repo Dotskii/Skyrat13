@@ -33,8 +33,6 @@
 	contains = list(/obj/item/clothing/suit/space/hardsuit/security/metrocop)
 	crate_name = "HEV Hardsuit crate"
 
-
-//Fuck you citadel maintainers for merging the removal of null crates _|_ (this is a middle finger)
 /datum/supply_pack/emergency/syndicate
 	name = "NULL_ENTRY"
 	desc = "(#@&^$THIS PACKAGE CONTAINS 30TC WORTH OF SOME RANDOM SYNDICATE GEAR WE HAD LYING AROUND THE WAREHOUSE. GIVE 'EM HELL OPERATIVE@&!*() "
@@ -62,11 +60,21 @@
 //maint energy crate
 /datum/supply_pack/emergency/maint_energy
 	name = "Maintenance Energy Freezer"
-	desc = "A freezer containing a six pack of maint energy to keep you hydrated and energized."
+	desc = "A freezer, containing a six pack of maint energy to keep you hydrated and energized."
+	contains = list()
+	contraband = TRUE
 	cost = 1000
 	crate_name = "maintenance energy freezer"
 	crate_type = /obj/structure/closet/crate/maint_energy
-	contraband = TRUE
+
+/datum/supply_pack/emergency/maint_energy/fill(obj/structure/closet/crate/C)
+	var/list/drinktypepaths = typesof(/obj/item/reagent_containers/food/drinks/soda_cans/maint_energy) - list(/obj/item/reagent_containers/food/drinks/soda_cans/maint_energy/blood_red)
+	var/list/illegaldrinks = list(/obj/item/reagent_containers/food/drinks/soda_cans/maint_energy/blood_red)
+	for(var/i in 1 to 6)
+		var/chosen = pick(drinktypepaths)
+		if(prob(1))
+			chosen = pick(illegaldrinks)
+		new chosen(C)
 
 /obj/structure/closet/crate/maint_energy
 	name = "maintenance energy freezer"
@@ -74,7 +82,7 @@
 	icon = 'modular_skyrat/icons/obj/crates.dmi'
 	icon_state = "maintenergy"
 
-/obj/structure/closet/crate/maint_energy/PopulateContents()
+/obj/structure/closet/crate/maint_energy/loaded/PopulateContents()
 	var/list/drinktypepaths = typesof(/obj/item/reagent_containers/food/drinks/soda_cans/maint_energy) - list(/obj/item/reagent_containers/food/drinks/soda_cans/maint_energy/blood_red)
 	var/list/illegaldrinks = list(/obj/item/reagent_containers/food/drinks/soda_cans/maint_energy/blood_red)
 	for(var/i in 1 to 6)

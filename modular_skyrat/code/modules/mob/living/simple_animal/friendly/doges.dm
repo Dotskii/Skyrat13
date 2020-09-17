@@ -8,16 +8,16 @@
 
 /mob/living/simple_animal/pet/dog/cheems
 	name = "\proper Cheems"
-	desc = "Cheemsburbger..."
+	real_name = "Cheems"
+	gender = MALE
+	desc = "It's the Cargo's overfed, yet still beloved dog."
 	icon = 'modular_skyrat/icons/mob/doges.dmi'
 	icon_state = "cheems"
 	icon_dead = "cheems_dead"
 	icon_living = "cheems"
-	speak = list("Burbger...", "McDomnald...", "Whompper...", "Bimg Mac...", "Whemre are the miners?", "Revolutiom!",\
-				"Pizza cramte.", "Collemctable hats...", "Research mining tech stupid sciemtists!", "Where's my rimpley?",\
-				"Shomtgun crate.", "Free cargo!", "No horny.")
 	gender = MALE
-	butcher_results = list(/obj/item/reagent_containers/food/snacks/burger/cheese = 5)
+	speak = list("Borf!", "Boof!", "Bork!", "Bowwow!")
+	butcher_results = list(/obj/item/reagent_containers/food/snacks/burger/cheese = 1, /obj/item/reagent_containers/food/snacks/meat/slab = 2, /obj/item/trash/syndi_cakes = 1)
 	faction = list("dog", "doge")
 	animal_species = /mob/living/simple_animal/pet/dog
 	gold_core_spawnable = FRIENDLY_SPAWN

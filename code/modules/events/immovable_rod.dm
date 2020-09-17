@@ -35,7 +35,8 @@ In my current plan for it, 'solid' will be defined as anything with density == 1
 	var/z = pick(SSmapping.levels_by_trait(ZTRAIT_STATION))
 	var/turf/startT = spaceDebrisStartLoc(startside, z)
 	var/turf/endT = spaceDebrisFinishLoc(startside, z)
-	new /obj/effect/immovablerod(startT, endT, C.special_target)
+	var/atom/rod = new /obj/effect/immovablerod(startT, endT, C.special_target)
+	announce_to_ghosts(rod)
 
 /obj/effect/immovablerod
 	name = "immovable rod"

@@ -56,8 +56,8 @@
 				chosenlength = text2num(chosenlengthstring)
 				chosensong = songs[chosenlengthstring]
 				if(chosensong && !songend)
-					if(M.client.prefs.toggles & SOUND_AMBIENCE)
-						M.stop_sound_channel(CHANNEL_AMBIENCE)
+					if(M?.client?.prefs?.toggles & SOUND_MEGAFAUNA)
+						M.stop_sound_channel(CHANNEL_JUKEBOX)
 						songend = chosenlength + world.time
 						SEND_SOUND(M, chosensong) // so silence ambience will mute moosic for people who don't want that, or it just doesn't play at all if prefs disable it
 				if(!retaliated)
@@ -70,8 +70,8 @@
 				enemies |= M
 				enemies |= M.occupant
 				var/mob/living/O = M.occupant
-				if(O.client.prefs.toggles & SOUND_AMBIENCE)
-					O.stop_sound_channel(CHANNEL_AMBIENCE)
+				if(O?.client?.prefs?.toggles & SOUND_MEGAFAUNA)
+					O.stop_sound_channel(CHANNEL_JUKEBOX)
 					songend = chosenlength + world.time
 					SEND_SOUND(O, chosensong)
 				if(!retaliated)
@@ -95,8 +95,8 @@
 		if(world.time >= songend)
 			for(var/mob/living/M in view(src, vision_range))
 				if(client)
-					if(M.client.prefs.toggles & SOUND_AMBIENCE)
-						M.stop_sound_channel(CHANNEL_AMBIENCE)
+					if(M?.client?.prefs?.toggles & SOUND_MEGAFAUNA)
+						M.stop_sound_channel(CHANNEL_JUKEBOX)
 						songend = chosenlength + world.time
 						SEND_SOUND(M, chosensong)
 	if(health <= glorythreshold && !glorykill && stat != DEAD)
@@ -115,8 +115,8 @@
 		return
 	else
 		for(var/mob/living/M in view(src, vision_range))
-			if(M.client)
-				M.stop_sound_channel(CHANNEL_AMBIENCE)
+			if(M?.client?.prefs?.toggles & SOUND_MEGAFAUNA)
+				M.stop_sound_channel(CHANNEL_JUKEBOX)
 		animate(src, color = initial(color), time = 3)
 		desc = initial(desc)
 		var/datum/status_effect/crusher_damage/C = has_status_effect(STATUS_EFFECT_CRUSHERDAMAGETRACKING)
@@ -131,37 +131,38 @@
 			SSblackbox.record_feedback("tally", tab, 1, "[initial(name)]")
 			if(!elimination)	//used so the achievment only occurs for the last legion to die.
 				grant_achievement(medal_type, score_type, crusher_kill)
-		..()
+		return ..()
 
 /mob/living/simple_animal/hostile/megafauna/AltClick(mob/living/carbon/slayer)
-	if(glorykill && stat != DEAD)
+	if(!slayer.canUseTopic(src, TRUE))
+		return
+	if(glorykill)
 		if(ranged)
 			if(ranged_cooldown >= world.time)
 				ranged_cooldown += 10
 			else
 				ranged_cooldown = 10 + world.time
-		if(do_after(slayer, 10, needhand = TRUE, target = src, progress = FALSE))
+		if(do_mob(slayer, src, 10) && (stat != DEAD))
 			var/message
-			if(stat != DEAD)
-				if(!slayer.get_active_held_item() || (!istype(slayer.get_active_held_item(), /obj/item/twohanded/kinetic_crusher) && !istype(slayer.get_active_held_item(), /obj/item/gun/energy/kinetic_accelerator)))
-					message = pick(glorymessageshand)
-				else if(istype(slayer.get_active_held_item(), /obj/item/twohanded/kinetic_crusher))
-					message = pick(glorymessagescrusher)
-				else if(istype(slayer.get_active_held_item(), /obj/item/gun/energy/kinetic_accelerator))
-					message = pick(glorymessagespka)
-					var/obj/item/gun/energy/kinetic_accelerator/KA = get_active_held_item()
-					if(KA && KA.bayonet)
-						message = pick(glorymessagespka | glorymessagespkabayonet)
-				if(message)
-					visible_message("<span class='danger'><b>[slayer] [message]</b></span>")
-				else
-					visible_message("<span class='danger'><b>[slayer] does something generally considered brutal to [src]... Whatever that may be!</b></span>")
-				adjustHealth(maxHealth, TRUE, TRUE)
-				if(mob_biotypes & MOB_ORGANIC)
-					new /obj/effect/gibspawner/generic(src.loc)
-				else if(mob_biotypes & MOB_ROBOTIC)
-					new /obj/effect/gibspawner/robot(src.loc)
-				slayer.heal_overall_damage(gloryhealth,gloryhealth)
+			if(!slayer.get_active_held_item() || (!istype(slayer.get_active_held_item(), /obj/item/kinetic_crusher) && !istype(slayer.get_active_held_item(), /obj/item/gun/energy/kinetic_accelerator)))
+				message = pick(glorymessageshand)
+			else if(istype(slayer.get_active_held_item(), /obj/item/kinetic_crusher))
+				message = pick(glorymessagescrusher)
+			else if(istype(slayer.get_active_held_item(), /obj/item/gun/energy/kinetic_accelerator))
+				message = pick(glorymessagespka)
+				var/obj/item/gun/energy/kinetic_accelerator/KA = get_active_held_item()
+				if(KA && KA.bayonet)
+					message = pick(glorymessagespka | glorymessagespkabayonet)
+			if(message)
+				visible_message("<span class='danger'><b>[slayer] [message]</b></span>")
+			else
+				visible_message("<span class='danger'><b>[slayer] does something generally considered brutal to [src]... Whatever that may be!</b></span>")
+			adjustHealth(maxHealth, TRUE, TRUE)
+			if(mob_biotypes & MOB_ORGANIC)
+				new /obj/effect/gibspawner/generic(src.loc)
+			else if(mob_biotypes & MOB_ROBOTIC)
+				new /obj/effect/gibspawner/robot(src.loc)
+			slayer.heal_overall_damage(gloryhealth,gloryhealth)
 		else
 			to_chat(slayer, "<span class='danger'>You fail to glory kill [src]!</span>")
 
@@ -173,7 +174,7 @@
 		"<span class='userdanger'>You feast on [L], restoring your health!</span>")
 	if(!is_station_level(z) || client) //NPC monsters won't heal while on station
 		adjustBruteLoss(-L.maxHealth/2)
-	if(L.client)
-		L.stop_sound_channel(CHANNEL_AMBIENCE)
+	if(L?.client?.prefs?.toggles & SOUND_MEGAFAUNA)
+		L.stop_sound_channel(CHANNEL_JUKEBOX)
 	L.gib()
 	..()

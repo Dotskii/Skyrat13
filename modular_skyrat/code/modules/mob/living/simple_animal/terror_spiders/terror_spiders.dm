@@ -27,7 +27,7 @@ GLOBAL_LIST_EMPTY(ts_spiderling_list)
 	// Health
 	maxHealth = 120
 	health = 120
-
+	damage_coeff = list(BRUTE = 1.2, BURN = 1.5, TOX = 0.1, CLONE = 0.1, STAMINA = 0.5, OXY = 0.3) //Spiders are infact weak to crush
 	// Melee attacks
 	melee_damage_lower = 15
 	melee_damage_upper = 20
@@ -288,7 +288,7 @@ GLOBAL_LIST_EMPTY(ts_spiderling_list)
 	handle_dying()
 	return ..()
 
-/mob/living/simple_animal/hostile/poison/terror_spider/Life(seconds, times_fired)
+/mob/living/simple_animal/hostile/poison/terror_spider/PhysicalLife(seconds, times_fired)
 	. = ..()
 	if(!.) // if mob is dead
 		if(prob(2))
