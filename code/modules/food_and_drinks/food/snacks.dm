@@ -21,7 +21,7 @@ Food formatting and crafting examples.
 	icon_state = "saltychip"													//Refers to an icon, usually in food.dmi
 	bitesize = 3																//How many reagents are consumed in each bite.
 	list_reagents = list(/datum/reagent/consumable/nutriment = 6,				//What's inside the snack, but only if spawned. For example, from a chemical reaction, vendor, or slime core spawn.
-						/datum/reagent/consumable/nutriment/vitamin = 2)		
+						/datum/reagent/consumable/nutriment/vitamin = 2)
 	bonus_reagents = list(/datum/reagent/consumable/nutriment = 1,				//What's -added- to the food, in addition to the reagents contained inside the foods used to craft it. Basically, a reward for cooking.
 						/datum/reagent/consumable/nutriment/vitamin = 1)		^^For example. Egg+Egg = 2Egg + Bonus Reagents.
 	filling_color = "#F4A460"													//What color it will use if put in a custom food.
@@ -246,22 +246,11 @@ All foods are distributed among various categories. Use common sense.
 		)
 		to_chat(user, "<span class='warning'>You cannot slice [src] here! You need a table or at least a tray.</span>")
 		return FALSE
-
-	var/slices_lost = 0
-	if (accuracy >= IS_SHARP_ACCURATE)
-		user.visible_message( \
-			"[user] slices [src].", \
-			"<span class='notice'>You slice [src].</span>" \
-		)
-	else
-		user.visible_message( \
-			"[user] inaccurately slices [src] with [W]!", \
-			"<span class='notice'>You inaccurately slice [src] with your [W]!</span>" \
-		)
-		slices_lost = rand(1,min(1,round(slices_num/2)))
+	
+	user.visible_message("[user] slices [src].", "<span class='notice'>You slice [src].</span>")
 
 	var/reagents_per_slice = reagents.total_volume/slices_num
-	for(var/i=1 to (slices_num-slices_lost))
+	for(var/i=1 to (slices_num))
 		var/obj/item/reagent_containers/food/snacks/slice = new slice_path (loc)
 		initialize_slice(slice, reagents_per_slice)
 	qdel(src)
@@ -406,3 +395,13 @@ All foods are distributed among various categories. Use common sense.
 		TB.MouseDrop(over)
 	else
 		return ..()
+
+// //////////////////////////////////////////////Frying////////////////////////////////////////
+/atom/proc/fry(cook_time = 30) //you can truly fry anything
+	//don't fry reagent containers that aren't food items, indestructable items, or items that are already fried
+	if(isitem(src))
+		var/obj/item/fried_item = src
+		if(fried_item.resistance_flags & INDESTRUCTIBLE)
+			return
+	if(!GetComponent(/datum/component/fried) && (!reagents || isfood(src) || ismob(src)))
+		AddComponent(/datum/component/fried, frying_power = cook_time)
