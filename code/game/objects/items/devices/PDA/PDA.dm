@@ -117,8 +117,10 @@ GLOBAL_LIST_EMPTY(PDAs)
 
 /obj/item/pda/Initialize()
 	. = ..()
+	AddComponent(/datum/component/overlay_lighting, f_col, f_lum, f_pow, FALSE) //Skyrat change
 	if(fon)
-		set_light(f_lum, f_pow, f_col)
+		var/datum/component/overlay_lighting/OL = GetComponent(/datum/component/overlay_lighting)
+		OL.turn_on()
 
 	GLOB.PDAs += src
 	if(default_cartridge)
@@ -837,7 +839,12 @@ GLOBAL_LIST_EMPTY(PDAs)
 /obj/item/pda/proc/receive_message(datum/signal/subspace/pda/signal)
 	tnote += "<i><b>&larr; From <a href='byond://?src=[REF(src)];choice=Message;target=[REF(signal.source)]'>[signal.data["name"]]</a> ([signal.data["job"]]):</b></i> <a href='byond://?src=[REF(src)];choice=toggle_block;target=[signal.data["name"]]'>(BLOCK/UNBLOCK)</a><br>[signal.format_message()]<br>"
 	if (!silent)
-		playsound(src, 'sound/machines/twobeep.ogg', 50, 1)
+		//new era -- @ everyone
+		if(prob(10))
+			playsound(src, 'newerastation/sound/machines/ping.ogg', 50)
+		else
+			playsound(src, 'sound/machines/twobeep.ogg', 50, 1)
+		//new era end
 		audible_message("[icon2html(src, hearers(src))] *[ttone]*", null, 3)
 	//Search for holder of the PDA.
 	var/mob/living/L = null
@@ -930,12 +937,13 @@ GLOBAL_LIST_EMPTY(PDAs)
 /obj/item/pda/proc/toggle_light()
 	if(hasSiliconAccessInArea(usr) || !usr.canUseTopic(src, BE_CLOSE))
 		return
+	var/datum/component/overlay_lighting/OL = GetComponent(/datum/component/overlay_lighting)
 	if(fon)
 		fon = FALSE
-		set_light(0)
+		OL.turn_off()
 	else if(f_lum)
 		fon = TRUE
-		set_light(f_lum, f_pow, f_col)
+		OL.turn_on()
 	update_icon()
 
 /obj/item/pda/proc/remove_pen()

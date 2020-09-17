@@ -1,7 +1,7 @@
 /obj/item/organ/genital
 	color = "#fcccb3"
 	w_class = WEIGHT_CLASS_SMALL
-	organ_flags = ORGAN_NO_DISMEMBERMENT
+	organ_flags = ORGAN_NO_DISMEMBERMENT //skyrat edit - fuck this shit i want to castrate people with a cleaver
 	var/shape
 	var/sensitivity = 1 // wow if this were ever used that'd be cool but it's not but i'm keeping it for my unshit code
 	var/genital_flags //see citadel_defines.dm
@@ -49,6 +49,13 @@
 	if(linked_organ_slot || (linked_organ && !owner))
 		update_link()
 
+/obj/item/organ/genital/examine(mob/user)
+	. = ..()
+	. |= genital_examine(user)
+
+/obj/item/organ/genital/proc/genital_examine(mob/user)
+	return
+
 //exposure and through-clothing code
 /mob/living/carbon
 	var/list/exposed_genitals = list() //Keeping track of them so we don't have to iterate through every genitalia and see if exposed
@@ -56,6 +63,7 @@
 /obj/item/organ/genital/proc/is_exposed()
 	if(!owner || genital_flags & (GENITAL_INTERNAL|GENITAL_HIDDEN))
 		return FALSE
+	/* skyrat edit
 	if(genital_flags & GENITAL_UNDIES_HIDDEN && ishuman(owner))
 		var/mob/living/carbon/human/H = owner
 		if(!(NO_UNDERWEAR in H.dna.species.species_traits))
@@ -63,6 +71,7 @@
 			var/datum/sprite_accessory/underwear/bottom/B = H.hidden_underwear ? null : GLOB.underwear_list[H.underwear]
 			if(zone == BODY_ZONE_CHEST ? (T?.covers_chest || B?.covers_chest) : (T?.covers_groin || B?.covers_groin))
 				return FALSE
+	*/
 	if(genital_flags & GENITAL_THROUGH_CLOTHES)
 		return TRUE
 
@@ -162,7 +171,13 @@
 /obj/item/organ/genital/proc/generate_fluid(datum/reagents/R)
 	var/amount = clamp(fluid_rate * time_since_last_orgasm * fluid_mult,0,fluid_max_volume)
 	R.clear_reagents()
-	R.add_reagent(fluid_id,amount)
+	//skyrat edit - fix coom
+	if(fluid_id)
+		R.add_reagent(fluid_id,amount)
+	else if(linked_organ && linked_organ.fluid_id)
+		amount = clamp(linked_organ.fluid_rate * time_since_last_orgasm * linked_organ.fluid_mult,0,linked_organ.fluid_max_volume)
+		R.add_reagent(linked_organ.fluid_id, amount)
+	//
 	return TRUE
 
 /obj/item/organ/genital/proc/update_link()
@@ -240,7 +255,7 @@
 	if(!. && I && slot && !(slot in GLOB.no_genitals_update_slots)) //the item was successfully equipped, and the chosen slot wasn't merely storage, hands or cuffs.
 		update_genitals()
 
-/mob/living/carbon/human/doUnEquip(obj/item/I, force, newloc, no_move, invdrop = TRUE)
+/mob/living/carbon/human/doUnEquip(obj/item/I, force, newloc, no_move, invdrop = TRUE, ignore_strip_self = TRUE) //skyrat edit
 	var/no_update = FALSE
 	if(!I || I == l_store || I == r_store || I == s_store || I == handcuffed || I == legcuffed || get_held_index_of_item(I)) //stops storages, cuffs and held items from triggering it.
 		no_update = TRUE

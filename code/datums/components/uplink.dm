@@ -181,6 +181,18 @@ GLOBAL_LIST_EMPTY(uplinks)
 					continue
 					if(is_inaccessible)
 						continue
+			//skyrat edit
+			if(I.restricted_species.len)
+				if(ishuman(user))
+					var/is_inaccessible = TRUE
+					var/mob/living/carbon/human/H = user
+					for(var/F in I.restricted_species)
+						if(F == H.dna.species.id || debug)
+							is_inaccessible = FALSE
+							break
+					if(is_inaccessible)
+						continue
+			//
 			cat["items"] += list(list(
 				"name" = I.name,
 				"cost" = I.cost,
@@ -244,9 +256,12 @@ GLOBAL_LIST_EMPTY(uplinks)
 	locked = FALSE
 	interact(null, implant.imp_in)
 
+// new era -- Fix runtime when implanting infiltrators
 /datum/component/uplink/proc/implanting(datum/source, list/arguments)
+	var/mob/target = arguments[1]
 	var/mob/user = arguments[2]
-	owner = "[user.key]"
+	owner = "[user ? user.key : target.key]"
+// new era end
 
 /datum/component/uplink/proc/old_implant(datum/source, list/arguments, obj/item/implant/new_implant)
 	// It kinda has to be weird like this until implants are components

@@ -16,6 +16,8 @@
 
 	/// If it's valid territory for gangs/cults to summon
 	var/valid_territory = TRUE
+	/// malf ais can hack this
+	var/valid_malf_hack = TRUE
 	/// if blobs can spawn there and if it counts towards their score.
 	var/blob_allowed = TRUE
 	/// whether servants can warp into this area from Reebe
@@ -37,6 +39,10 @@
 	var/atmosalm = FALSE
 	var/poweralm = TRUE
 	var/lightswitch = TRUE
+
+	var/totalbeauty = 0 //All beauty in this area combined, only includes indoor area.
+	var/beauty = 0 // Beauty average per open turf in the area
+	var/beauty_threshold = 150 //If a room is too big it doesn't have beauty.
 
 	var/requires_power = TRUE
 	/// This gets overridden to 1 for space in area/Initialize().
@@ -65,7 +71,7 @@
 	/// Hides area from player Teleport function.
 	var/hidden = FALSE
 	/// Is the area teleport-safe: no space / radiation / aggresive mobs / other dangers
-	var/safe = FALSE 				
+	var/safe = FALSE
 	/// If false, loading multiple maps with this area type will create multiple instances.
 	var/unique = TRUE
 
@@ -192,6 +198,7 @@ GLOBAL_LIST_EMPTY(teleportlocs)
 /area/LateInitialize()
 	if(!base_area) //we don't want to run it twice.
 		power_change()		// all machines set to current power level, also updates icon
+	update_beauty()
 
 /area/proc/reg_in_areas_in_z()
 	if(contents.len)
@@ -511,7 +518,7 @@ GLOBAL_LIST_EMPTY(teleportlocs)
 			used_environ += amount
 
 
-/area/Entered(atom/movable/M)
+/area/Entered(atom/movable/M, atom/OldLoc)
 	set waitfor = FALSE
 	SEND_SIGNAL(src, COMSIG_AREA_ENTERED, M)
 	SEND_SIGNAL(M, COMSIG_ENTER_AREA, src) //The atom that enters the area
@@ -519,6 +526,11 @@ GLOBAL_LIST_EMPTY(teleportlocs)
 		return
 
 	var/mob/living/L = M
+	var/turf/oldTurf = get_turf(OldLoc)
+	var/area/A = oldTurf?.loc
+	if(A && (A.has_gravity != has_gravity))
+		L.update_gravity(L.mob_has_gravity())
+
 	if(!L.ckey)
 		return
 
@@ -538,6 +550,16 @@ GLOBAL_LIST_EMPTY(teleportlocs)
 			L.client.played = TRUE
 			addtimer(CALLBACK(L.client, /client/proc/ResetAmbiencePlayed), 600)
 
+///Divides total beauty in the room by roomsize to allow us to get an average beauty per tile.
+/area/proc/update_beauty()
+	if(!areasize)
+		beauty = 0
+		return FALSE
+	if(areasize >= beauty_threshold)
+		beauty = 0
+		return FALSE //Too big
+	beauty = totalbeauty / areasize
+
 /area/Exited(atom/movable/M)
 	SEND_SIGNAL(src, COMSIG_AREA_EXITED, M)
 	SEND_SIGNAL(M, COMSIG_EXIT_AREA, src) //The atom that exits the area
@@ -552,6 +574,7 @@ GLOBAL_LIST_EMPTY(teleportlocs)
 	power_environ = FALSE
 	always_unpowered = FALSE
 	valid_territory = FALSE
+	valid_malf_hack = FALSE
 	blob_allowed = FALSE
 	addSorted()
 

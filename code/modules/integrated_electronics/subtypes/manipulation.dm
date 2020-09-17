@@ -78,7 +78,7 @@
 				for(var/i in 1 to length(harvest_output))
 					harvest_output[i] = WEAKREF(harvest_output[i])
 
-				if(harvest_output.len)
+				if(length(harvest_output))
 					set_pin_data(IC_OUTPUT, 1, harvest_output)
 					push_data()
 			if(1)
@@ -162,7 +162,7 @@
 
 /obj/item/integrated_circuit/manipulation/grabber/do_work()
 	var/obj/item/AM = get_pin_data_as_type(IC_INPUT, 1, /obj/item)
-	if(!QDELETED(AM) && !istype(AM, /obj/item/electronic_assembly) && !istype(AM, /obj/item/transfer_valve) && !istype(AM, /obj/item/twohanded) && !istype(assembly.loc, /obj/item/implant/storage))
+	if(!QDELETED(AM) && !istype(AM, /obj/item/electronic_assembly) && !istype(AM, /obj/item/transfer_valve) && !istype(assembly.loc, /obj/item/implant/storage) && !AM.GetComponent(/datum/component/two_handed))
 		var/mode = get_pin_data(IC_INPUT, 2)
 		switch(mode)
 			if(1)
@@ -186,6 +186,8 @@
 			AM.forceMove(src)
 
 /obj/item/integrated_circuit/manipulation/grabber/proc/drop(obj/item/AM, turf/T = drop_location())
+	if(!(AM in contents)) //new era -- no bluespace item teleportation, thanks
+		return
 	var/atom/A = get_object()
 	A.investigate_log("dropped ([AM]) from [src].", INVESTIGATE_CIRCUIT)
 	AM.forceMove(T)
@@ -300,7 +302,7 @@
 	var/target_y_rel = round(get_pin_data(IC_INPUT, 2))
 	var/obj/item/A = get_pin_data_as_type(IC_INPUT, 3, /obj/item)
 
-	if(!A || A.anchored || A.throwing || A == assembly || istype(A, /obj/item/twohanded) || istype(A, /obj/item/transfer_valve))
+	if(!A || A.anchored || A.throwing || A == assembly || istype(A, /obj/item/transfer_valve) || A.GetComponent(/datum/component/two_handed))
 		return
 
 	if (istype(assembly.loc, /obj/item/implant/storage)) //Prevents the more abusive form of chestgun.

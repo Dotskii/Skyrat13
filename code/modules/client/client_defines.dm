@@ -19,6 +19,8 @@
 	///Next tick to reset the total message counter
 	var/total_count_reset = 0
 	var/ircreplyamount = 0
+	/// last time they tried to do an autobunker auth
+	var/autobunker_last_try = 0
 
 		/////////
 		//OTHER//
@@ -77,6 +79,7 @@
 	//var/list/credits //lazy list of all credit object bound to this client
 
 	var/datum/player_details/player_details //these persist between logins/logouts during the same round.
+	var/aooc_name // Skyrat edit
 
 	var/list/char_render_holders			//Should only be a key-value list of north/south/east/west = obj/screen.
 
@@ -99,5 +102,50 @@
 	/// custom movement keys for this client
 	var/list/movement_keys = list()
 
+	///Autoclick list of two elements, first being the clicked thing, second being the parameters.
+	var/list/atom/selected_target[2]
+	///Autoclick variable referencing the associated item.
+	var/obj/item/active_mousedown_item = null
+	///Used in MouseDrag to preserve the original mouse click parameters
+	var/mouseParams = ""
+	///Used in MouseDrag to preserve the last mouse-entered location.
+	var/mouseLocation = null
+	///Used in MouseDrag to preserve the last mouse-entered object.
+	//var/mouseObject = null //Skyrat change - this messes up with GC and isnt really used
+	var/mouseControlObject = null
+	//Middle-mouse-button click dragtime control for aimbot exploit detection.
+	var/middragtime = 0
+	//Middle-mouse-button clicked object control for aimbot exploit detection.
+	var/atom/middragatom
+
 	/// Messages currently seen by this client
 	var/list/seen_messages
+	///A lazy list of atoms we've examined in the last EXAMINE_MORE_TIME (default 1.5) seconds, so that we will call [atom/proc/examine_more()] instead of [atom/proc/examine()] on them when examining
+	var/list/recent_examines
+	///When was the last time we warned them about not cryoing without an ahelp, set to -5 minutes so that rounstart cryo still warns
+	var/cryo_warned = -5 MINUTES
+
+	var/list/parallax_layers
+	var/list/parallax_layers_cached
+	var/atom/movable/movingmob
+	var/turf/previous_turf
+	///world.time of when we can state animate()ing parallax again
+	var/dont_animate_parallax
+	///world.time of last parallax update
+	var/last_parallax_shift
+	///ds between parallax updates
+	var/parallax_throttle = 0
+	var/parallax_movedir = 0
+	var/parallax_layers_max = 3
+	var/parallax_animate_timer
+
+	// List of all asset filenames sent to this client by the asset cache, along with their assoicated md5s
+	var/list/sent_assets = list()
+	/// List of all completed blocking send jobs awaiting acknowledgement by send_asset
+	var/list/completed_asset_jobs = list()
+	/// Last asset send job id.
+	var/last_asset_job = 0
+	var/last_completed_asset_job = 0
+	
+	//world.time of when the crew manifest can be accessed
+	var/crew_manifest_delay

@@ -75,11 +75,13 @@
 	crate_type = /obj/structure/closet/crate
 
 /datum/supply_pack/vending/kinkmate
-	name = "Kinkmate Supply and Construction Kit"
+	// skyrat edit - removes the construction from the name, as the circuit is removed
+	name = "Kinkmate Supply Kit"
 	desc = "A fun way to spend the shift. Contains unmentionable desires."
 	cost = 2000
 	contraband = TRUE
-	contains = list(/obj/item/vending_refill/kink, /obj/item/circuitboard/machine/kinkmate)
+	// skyrat edit - removed the circuit thing like this, made it like the others
+	contains = list(/obj/item/vending_refill/kink)
 	crate_name = "Kinkmate construction kit"
 
 /datum/supply_pack/vending/medical
@@ -99,6 +101,7 @@
 	contains = list(/obj/machinery/vending/security)
 	crate_name = "SecTech supply crate"
 	crate_type = /obj/structure/closet/crate/secure/gear
+	can_private_buy = FALSE
 
 /datum/supply_pack/vending/snack
 	name = "Snack Supply Crate"

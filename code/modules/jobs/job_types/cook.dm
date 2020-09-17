@@ -12,8 +12,10 @@
 
 	outfit = /datum/outfit/job/cook
 
-	access = list(ACCESS_HYDROPONICS, ACCESS_BAR, ACCESS_KITCHEN, ACCESS_MORGUE, ACCESS_MINERAL_STOREROOM)
-	minimal_access = list(ACCESS_KITCHEN, ACCESS_MORGUE, ACCESS_MINERAL_STOREROOM)
+	access = list(ACCESS_HYDROPONICS, ACCESS_BAR, ACCESS_KITCHEN, ACCESS_MINERAL_STOREROOM) //Skyrat Edit, No Morgue Access
+	minimal_access = list(ACCESS_KITCHEN, ACCESS_MINERAL_STOREROOM) //Skyrat Edit, No Morgue Access
+	paycheck = PAYCHECK_EASY
+	paycheck_department = ACCOUNT_SRV
 
 	display_order = JOB_DISPLAY_ORDER_COOK
 	threat = 0.2
@@ -22,7 +24,6 @@
 	name = "Cook"
 	jobtype = /datum/job/cook
 
-	id = /obj/item/card/id/department/serv //Skyrat change
 	belt = /obj/item/pda/cook
 	ears = /obj/item/radio/headset/headset_srv
 	uniform = /obj/item/clothing/under/rank/civilian/chef

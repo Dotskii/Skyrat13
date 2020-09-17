@@ -39,6 +39,7 @@ By design, d1 is the smallest direction and d2 is the highest
 	icon = 'icons/obj/power_cond/cables.dmi'
 	icon_state = "0-1"
 	level = 1 //is underfloor
+	plane = ABOVE_WALL_PLANE
 	layer = WIRE_LAYER //Above hidden pipes, GAS_PIPE_HIDDEN_LAYER
 	anchored = TRUE
 	obj_flags = CAN_BE_HIT | ON_BLUEPRINTS
@@ -170,8 +171,8 @@ By design, d1 is the smallest direction and d2 is the highest
 			return
 		coil.cable_join(src, user)
 
-	else if(istype(W, /obj/item/twohanded/rcl))
-		var/obj/item/twohanded/rcl/R = W
+	else if(istype(W, /obj/item/rcl))
+		var/obj/item/rcl/R = W
 		if(R.loaded)
 			R.loaded.cable_join(src, user)
 			R.is_empty(user)
@@ -487,6 +488,7 @@ By design, d1 is the smallest direction and d2 is the highest
 
 /obj/item/stack/cable_coil
 	name = "cable coil"
+	custom_price = PRICE_CHEAP_AS_FREE
 	gender = NEUTER //That's a cable coil sounds better than that's some cable coils
 	icon = 'icons/obj/power.dmi'
 	icon_state = "coil"
@@ -546,14 +548,22 @@ By design, d1 is the smallest direction and d2 is the highest
 		return ..()
 
 	var/obj/item/bodypart/affecting = H.get_bodypart(check_zone(user.zone_selected))
-	if(affecting && affecting.status == BODYPART_ROBOTIC)
-		if(user == H)
-			user.visible_message("<span class='notice'>[user] starts to fix some of the wires in [H]'s [affecting.name].</span>", "<span class='notice'>You start fixing some of the wires in [H]'s [affecting.name].</span>")
-			if(!do_mob(user, H, 50))
-				return
-		if(item_heal_robotic(H, user, 0, 15))
-			use(1)
-		return
+	if(affecting && (affecting.status & BODYPART_ROBOTIC) && (user.a_intent == INTENT_HELP))
+		if(INTERACTING_WITH(user, H))
+			to_chat(user, "<span class='warning'>You are already interacting with [H]!</span>")
+			return
+		if(!affecting.burn_dam)
+			to_chat(user, "<span class='notice'>\The [affecting] is already fully repaired!</span>")
+			return
+		if(!use(1))
+			to_chat(user, "<span class='warning'>There aren't enough stacks in \the [src] to heal \the [affecting.name]!</span>")
+			return
+		user.visible_message("<span class='notice'>[user] starts to fix some of the wires in [H]'s [affecting.name].</span>", "<span class='notice'>You start fixing some of the wires in [H]'s [affecting.name].</span>")
+		if(!do_mob(user, H, 40))
+			return
+		item_heal_robotic(H, user, 0, 15)
+		if(affecting.burn_dam)
+			attack(H, user)
 	else
 		return ..()
 

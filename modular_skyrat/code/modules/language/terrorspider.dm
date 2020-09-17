@@ -4,7 +4,8 @@
 	speech_verb = "chitters"
 	ask_verb = "chitters"
 	exclaim_verb = "chitters"
-	key = "ts"
+	sing_verb = "chitters"
+	key = "w"
 
 /datum/language_holder/terror_spider
 	understood_languages = list(/datum/language/terrorspider = list(LANGUAGE_ATOM))

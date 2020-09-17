@@ -82,8 +82,9 @@
 		return 0
 	return ..()
 
-/mob/living/simple_animal/hostile/statue/Life()
-	..()
+/mob/living/simple_animal/hostile/statue/BiologicalLife(seconds, times_fired)
+	if(!(. = ..()))
+		return
 	if(!client && target) // If we have a target and we're AI controlled
 		var/mob/watching = can_be_seen()
 		// If they're not our target
@@ -127,14 +128,10 @@
 
 	// This loop will, at most, loop twice.
 	for(var/atom/check in check_list)
-		for(var/mob/living/M in viewers(world.view + 1, check) - src)
+		for(var/mob/living/M in fov_viewers(world.view + 1, check) - src)
 			if(M.client && CanAttack(M) && !M.silicon_privileges)
 				if(!M.eye_blind)
 					return M
-		for(var/obj/mecha/M in view(world.view + 1, check)) //assuming if you can see them they can see you
-			if(M.occupant && M.occupant.client)
-				if(!M.occupant.eye_blind)
-					return M.occupant
 	return null
 
 // Cannot talk

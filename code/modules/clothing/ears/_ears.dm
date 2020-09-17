@@ -6,6 +6,7 @@
 	throwforce = 0
 	slot_flags = ITEM_SLOT_EARS
 	resistance_flags = NONE
+	custom_price = PRICE_BELOW_NORMAL
 
 /obj/item/clothing/ears/earmuffs
 	name = "earmuffs"
@@ -19,7 +20,7 @@
 /obj/item/clothing/ears/earmuffs/ComponentInitialize()
 	. = ..()
 	AddElement(/datum/element/earhealing)
-	AddComponent(/datum/component/wearertargeting/earprotection, list(SLOT_EARS))
+	AddComponent(/datum/component/wearertargeting/earprotection, list(SLOT_EARS_LEFT, SLOT_EARS_RIGHT)) //skyrat edit
 
 /obj/item/clothing/ears/headphones
 	name = "headphones"
@@ -30,6 +31,7 @@
 	slot_flags = ITEM_SLOT_EARS | ITEM_SLOT_HEAD | ITEM_SLOT_NECK		//Fluff item, put it whereever you want!
 	actions_types = list(/datum/action/item_action/toggle_headphones)
 	var/headphones_on = FALSE
+	custom_price = PRICE_ALMOST_CHEAP
 
 /obj/item/clothing/ears/headphones/Initialize()
 	. = ..()

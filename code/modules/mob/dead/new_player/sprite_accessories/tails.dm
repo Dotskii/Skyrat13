@@ -462,6 +462,20 @@
 	color_src = MATRIXED
 	icon = 'modular_citadel/icons/mob/mam_tails.dmi'
 
+//Skyrat
+/datum/sprite_accessory/tails/human/spade
+	name = "Succubus Spade Tail"
+	icon_state = "spade"
+	color_src = MATRIXED
+	icon = 'modular_skyrat/icons/mob/mam_tails.dmi'
+
+/datum/sprite_accessory/tails_animated/human/spade
+	name = "Succubus Spade Tail"
+	icon_state = "spade"
+	color_src = MATRIXED
+	icon = 'modular_skyrat/icons/mob/mam_tails.dmi'
+//End Skyrat
+
 /datum/sprite_accessory/tails/human/tentacle
 	name = "Tentacle"
 	icon_state = "tentacle"
@@ -521,7 +535,7 @@
 /datum/sprite_accessory/mam_tails
 	color_src = MATRIXED
 	icon = 'modular_citadel/icons/mob/mam_tails.dmi'
-	recommended_species = list("mammal", "slimeperson", "podweak", "felinid", "insect")
+	recommended_species = list("anthro", "mammal", "aquatic", "avian", "slimeperson", "podweak", "felinid", "insect") //skyrat edit
 	mutant_part_string = "tail"
 	relevant_layers = list(BODY_BEHIND_LAYER, BODY_FRONT_LAYER)
 
@@ -835,6 +849,20 @@ datum/sprite_accessory/mam_tails/insect
 /datum/sprite_accessory/mam_tails_animated/tamamo_kitsune
 	name = "Tamamo Kitsune Tails"
 	icon_state = "9sune"
+
+//Skyrat
+/datum/sprite_accessory/mam_tails/spade
+	name = "Succubus Spade Tail"
+	icon_state = "spade"
+	color_src = MATRIXED
+	icon = 'modular_skyrat/icons/mob/mam_tails.dmi'
+
+/datum/sprite_accessory/mam_tails_animated/human/spade
+	name = "Succubus Spade Tail"
+	icon_state = "spade"
+	color_src = MATRIXED
+	icon = 'modular_skyrat/icons/mob/mam_tails.dmi'
+//End Skyrat
 
 /datum/sprite_accessory/mam_tails/tentacle
 	name = "Tentacle"

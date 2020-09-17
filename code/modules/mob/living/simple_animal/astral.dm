@@ -5,7 +5,7 @@
 	icon_state = "ghost"
 	icon_living = "ghost"
 	mob_biotypes = MOB_SPIRIT
-	//has_field_of_vision = FALSE //we are a spoopy ghost (COMMENDTED OUT - SKYRAT EDIT)
+	has_field_of_vision = FALSE //we are a spoopy ghost
 	attack_verb_continuous = "raises the hair on the neck of"
 	attack_verb_simple = "raise the hair on the neck of"
 	response_harm_continuous = "disrupts the concentration of"
@@ -62,7 +62,7 @@
 			log_reagent("FERMICHEM: [src] has astrally transmitted [message] into [A]")
 
 //Delete the mob if there's no mind! Pay that mob no mind.
-/mob/living/simple_animal/astral/Life()
-	if(!mind)
-		qdel(src)
+/mob/living/simple_animal/astral/PhysicalLife(seconds, times_fired)
 	. = ..()
+	if(!mind && !QDELETED(src))
+		qdel(src)

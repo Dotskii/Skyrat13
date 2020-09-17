@@ -39,6 +39,10 @@
 	Radio.listening = 0
 	Radio.set_frequency(FREQ_ENGINEERING)
 
+/obj/machinery/power/rad_collector/on_construction() // Skyrat bugfix
+	if(anchored)
+		connect_to_network()
+
 /obj/machinery/power/rad_collector/Destroy()
 	QDEL_NULL(Radio)
 	return ..()
@@ -72,7 +76,11 @@
 			loaded_tank.air_contents.gases[/datum/gas/oxygen] -= gasdrained
 			loaded_tank.air_contents.gases[/datum/gas/carbon_dioxide] += gasdrained*2
 			GAS_GARBAGE_COLLECT(loaded_tank.air_contents.gases)
-			SSresearch.science_tech.add_point_type(TECHWEB_POINT_TYPE_DEFAULT, stored_power*RAD_COLLECTOR_MINING_CONVERSION_RATE)
+			var/bitcoins_mined = stored_power*RAD_COLLECTOR_MINING_CONVERSION_RATE
+			var/datum/bank_account/D = SSeconomy.get_dep_account(ACCOUNT_ENG)
+			if(D)
+				D.adjust_money(bitcoins_mined)
+			SSresearch.science_tech.add_point_type(TECHWEB_POINT_TYPE_DEFAULT, bitcoins_mined)
 			last_push = stored_power
 			stored_power = 0
 
@@ -176,6 +184,7 @@
 /obj/machinery/power/rad_collector/analyzer_act(mob/living/user, obj/item/I)
 	if(loaded_tank)
 		loaded_tank.analyzer_act(user, I)
+	return TRUE // Skyrat change 
 
 /obj/machinery/power/rad_collector/examine(mob/user)
 	. = ..()

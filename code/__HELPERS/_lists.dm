@@ -13,6 +13,9 @@
 #define UNSETEMPTY(L) if (L && !length(L)) L = null
 #define LAZYCOPY(L) (L ? L.Copy() : list() )
 #define LAZYREMOVE(L, I) if(L) { L -= I; if(!length(L)) { L = null; } }
+//SKYRAT CHANGES BEGIN
+#define LAZYCUT(L, S, E) if((length(L) >= S) && (E == 0 || length(L) >= (E - 1))) { L.Cut(S, E); if(!length(L)) { L = null; } }
+//SKYRAT CHANGES END
 #define LAZYADD(L, I) if(!L) { L = list(); } L += I;
 #define LAZYOR(L, I) if(!L) { L = list(); } L |= I;
 #define LAZYFIND(L, V) L ? L.Find(V) : 0
@@ -69,7 +72,7 @@
 /proc/english_list(list/input, nothing_text = "nothing", and_text = " and ", comma_text = ", ", final_comma_text = "" )
 	var/total = input.len
 	if (!total)
-		return "[nothing_text]"
+		return nothing_text
 	else if (total == 1)
 		return "[input[1]]"
 	else if (total == 2)
@@ -629,6 +632,8 @@
 				value = "[REF(value)]"
 			L["[key]"] = "[value]"
 	return list2params(L)
+
+#define NUMLIST2TEXTLIST(list) splittext(list2params(list), "&")
 
 //Picks from the list, with some safeties, and returns the "default" arg if it fails
 #define DEFAULTPICK(L, default) ((islist(L) && length(L)) ? pick(L) : default)

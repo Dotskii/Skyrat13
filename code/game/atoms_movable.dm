@@ -16,6 +16,7 @@
 	var/verb_ask = "asks"
 	var/verb_exclaim = "exclaims"
 	var/verb_whisper = "whispers"
+	var/verb_sing = "sings" // Skyrat edit
 	var/verb_yell = "yells"
 	var/speech_span
 	var/inertia_dir = 0
@@ -37,6 +38,8 @@
 	var/throwforce = 0
 	var/datum/component/orbiter/orbiting
 	var/can_be_z_moved = TRUE
+	///If we were without gravity and another animation happened, the bouncing will stop, and we need to restart it in next life().
+	var/floating_need_update = FALSE
 
 	var/zfalling = FALSE
 /* // Skyrat edit -- 512 compatibility
@@ -118,25 +121,25 @@
 	if((var_name in careful_edits) && (var_value % world.icon_size) != 0)
 		return FALSE
 	switch(var_name)
-		if("x")
+		if(NAMEOF(src, x))
 			var/turf/T = locate(var_value, y, z)
 			if(T)
 				forceMove(T)
 				return TRUE
 			return FALSE
-		if("y")
+		if(NAMEOF(src, y))
 			var/turf/T = locate(x, var_value, z)
 			if(T)
 				forceMove(T)
 				return TRUE
 			return FALSE
-		if("z")
+		if(NAMEOF(src, z))
 			var/turf/T = locate(x, y, var_value)
 			if(T)
 				forceMove(T)
 				return TRUE
 			return FALSE
-		if("loc")
+		if(NAMEOF(src, loc))
 			if(istype(var_value, /atom))
 				forceMove(var_value)
 				return TRUE
@@ -179,14 +182,15 @@
 	return TRUE
 
 /atom/movable/proc/stop_pulling()
-	if(pulling)
-		pulling.pulledby = null
-		var/mob/living/ex_pulled = pulling
-		pulling = null
-		setGrabState(0)
-		if(isliving(ex_pulled))
-			var/mob/living/L = ex_pulled
-			L.update_mobility()// mob gets up if it was lyng down in a chokehold
+	if(!pulling)
+		return
+	pulling.pulledby = null
+	var/mob/living/ex_pulled = pulling
+	pulling = null
+	setGrabState(0)
+	if(isliving(ex_pulled))
+		var/mob/living/L = ex_pulled
+		L.update_mobility()// mob gets up if it was lyng down in a chokehold
 
 /atom/movable/proc/Move_Pulled(atom/A)
 	if(!pulling)
@@ -491,15 +495,16 @@
 /atom/movable/proc/float(on)
 	if(throwing)
 		return
-	if(on && !(movement_type & FLOATING))
+	if(on && (!(movement_type & FLOATING) || floating_need_update))
 		animate(src, pixel_y = pixel_y + 2, time = 10, loop = -1)
 		sleep(10)
 		animate(src, pixel_y = pixel_y - 2, time = 10, loop = -1)
-		setMovetype(movement_type | FLOATING)
-	else if (!on && (movement_type & FLOATING))
+		if(!(movement_type & FLOATING))
+			setMovetype(movement_type | FLOATING)
+	else if (!on && movement_type & FLOATING)
 		animate(src, pixel_y = initial(pixel_y), time = 10)
 		setMovetype(movement_type & ~FLOATING)
-
+	floating_need_update = FALSE
 
 /* 	Language procs
 *	Unless you are doing something very specific, these are the ones you want to use.

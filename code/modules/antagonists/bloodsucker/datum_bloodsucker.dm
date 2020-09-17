@@ -24,7 +24,7 @@
 	var/bloodsucker_level_unspent = 1
 	var/regen_rate = 0.3				// How fast do I regenerate?
 	var/additional_regen                // How much additional blood regen we gain from bonuses such as high blood.
-	var/feed_amount = 15				// Amount of blood drawn from a target per tick.
+	var/feed_amount = 22.5				// Amount of blood drawn from a target per tick.
 	var/max_blood_volume = 600			// Maximum blood a Vamp can hold via feeding.
 	// OBJECTIVES
 	var/list/datum/objective/objectives_given = list()	// For removal if needed.
@@ -39,7 +39,7 @@
 	var/passive_blood_drain = -0.1        //The amount of blood we loose each bloodsucker life() tick
 	// LISTS
 	var/static/list/defaultTraits = list (TRAIT_STABLEHEART, TRAIT_NOBREATH, TRAIT_SLEEPIMMUNE, TRAIT_NOCRITDAMAGE, TRAIT_RESISTCOLD, TRAIT_RADIMMUNE, TRAIT_NIGHT_VISION, \
-										  TRAIT_NOSOFTCRIT, TRAIT_NOHARDCRIT, TRAIT_AGEUSIA, TRAIT_COLDBLOODED, TRAIT_NONATURALHEAL, TRAIT_NOMARROW, TRAIT_NOPULSE, TRAIT_VIRUSIMMUNE)
+										  TRAIT_NOSOFTCRIT, TRAIT_NOHARDCRIT, TRAIT_AGEUSIA, TRAIT_COLDBLOODED, TRAIT_NONATURALHEAL, TRAIT_NOMARROW, TRAIT_NOPULSE, TRAIT_VIRUSIMMUNE, TRAIT_NODECAP, TRAIT_NOGUT)
 
 /datum/antagonist/bloodsucker/on_gain()
 	SSticker.mode.bloodsuckers |= owner // Add if not already in here (and you might be, if you were picked at round start)
@@ -414,6 +414,11 @@
 /datum/antagonist/bloodsucker/antag_listing_name()
 	return ..() + "([ReturnFullName(TRUE)])"
 
+//new era - TGUI team panel
+/datum/antagonist/bloodsucker/team_panel_name()
+	return ..() + TGUI_ANTAGLISTING_TEXT("([ReturnFullName(TRUE)])")
+
+
 //Whatever interesting things happened to the antag admins should know about
 //Include additional information about antag in this part
 /datum/antagonist/bloodsucker/antag_listing_status()
@@ -421,6 +426,11 @@
 		return "<font color=red>Final Death</font>"
 	return ..()
 
+//new era - TGUI team panel
+/datum/antagonist/bloodsucker/team_panel_status()
+	if (owner && owner.AmFinalDeath())
+		return TGUI_ANTAGLISTING_TEXT("Final Death", list(color="red"))
+	return ..()
 
 
 //Individual roundend report

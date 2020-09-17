@@ -44,11 +44,20 @@
 
 		if((H.movement_type & FLYING) || H.buckled)
 			return
+		//Skyrat edit - hardened soles trait
+		if(HAS_TRAIT(H, TRAIT_HARD_SOLES))
+			return
+		//
 
 		var/damage = rand(min_damage, max_damage)
 		if(HAS_TRAIT(H, TRAIT_LIGHT_STEP))
 			damage *= 0.75
-		H.apply_damage(damage, BRUTE, picked_def_zone)
+		//skyrat edit
+		if(H.w_socks)
+			if(H.w_socks.body_parts_covered & FEET)
+				damage *= 0.75
+		//
+		H.apply_damage(damage, BRUTE, picked_def_zone, wound_bonus = CANT_WOUND) //skyrat edit
 
 		if(cooldown < world.time - 10) //cooldown to avoid message spam.
 			if(!H.incapacitated(ignore_restraints = TRUE))

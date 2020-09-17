@@ -58,8 +58,19 @@ RLD
 	. = ..()
 
 /obj/item/construction/attackby(obj/item/W, mob/user, params)
-	if(iscyborg(user))
+	if(!rcd_item_insertion(W, user)) // Skyrat change: moved all logic to this proc
+		return ..()
+	update_icon()	//ensures that ammo counters (if present) get updated
+
+/obj/item/construction/pre_attack(atom/A, mob/living/user, params) // Skyrat change
+	if(rcd_item_insertion(A, user))
+		update_icon()
 		return
+	return ..()
+
+/obj/item/construction/proc/rcd_item_insertion(obj/item/W, mob/user) // Skyrat change: Moved logic to own proc, to prevent duplicate code
+	if(iscyborg(user))
+		return FALSE
 	var/loaded = 0
 	if(istype(W, /obj/item/rcd_ammo))
 		var/obj/item/rcd_ammo/R = W
@@ -95,8 +106,8 @@ RLD
 			playsound(src.loc, 'sound/machines/click.ogg', 50, 1)
 			qdel(W)
 	else
-		return ..()
-	update_icon()	//ensures that ammo counters (if present) get updated
+		return FALSE
+	return TRUE
 
 /obj/item/construction/proc/loadwithsheets(obj/item/stack/sheet/S, value, mob/user)
 	var/maxsheets = round((max_matter-matter)/value)    //calculate the max number of sheets that will fit in RCD
@@ -143,8 +154,8 @@ RLD
 	//if user can't be seen from A (only checks surroundings' opaqueness) and can't see A.
 	//jarring, but it should stop people from targetting atoms they can't see...
 	//excluding darkness, to allow RLD to be used to light pitch black dark areas.
-	if(!((user in view(view_range, A)) || (user in viewers(view_range, A))))
-		to_chat(user, "<span class='warning'>You focus, pointing \the [src] at whatever outside your field of vision in the given direction... to no avail.</span>")
+	if(!((user in view(view_range, A)) || (user in fov_viewers(view_range, A))))
+		to_chat(user, "<span class='warning'>You focus, pointing \the [src] at whatever outside your field of vision in that direction... to no avail.</span>")
 		return FALSE
 	return TRUE
 
@@ -154,6 +165,8 @@ RLD
 	icon_state = "rcd"
 	lefthand_file = 'icons/mob/inhands/equipment/tools_lefthand.dmi'
 	righthand_file = 'icons/mob/inhands/equipment/tools_righthand.dmi'
+	custom_price = PRICE_ABOVE_EXPENSIVE
+	custom_premium_price = PRICE_ALMOST_ONE_GRAND
 	max_matter = 160
 	item_flags = NO_MAT_REDEMPTION | NOBLUDGEON
 	has_ammobar = TRUE
@@ -567,7 +580,7 @@ RLD
 	no_ammo_message = "<span class='warning'>Insufficient charge.</span>"
 	desc = "A device used to rapidly build walls and floors."
 	canRturf = TRUE
-	upgrade = TRUE
+	upgrade = RCD_FULLY_UPGRADED
 	var/energyfactor = 72
 
 
@@ -607,7 +620,7 @@ RLD
 	matter = 160
 
 /obj/item/construction/rcd/loaded/upgraded
-	upgrade = TRUE
+	upgrade = RCD_FULLY_UPGRADED
 
 /obj/item/construction/rcd/combat
 	name = "Combat RCD"
@@ -617,6 +630,7 @@ RLD
 	max_matter = 500
 	matter = 500
 	canRturf = TRUE
+	upgrade = RCD_FULLY_UPGRADED
 
 /obj/item/construction/rcd/industrial
 	name = "industrial RCD"
@@ -649,7 +663,7 @@ RLD
 	name = "admin RCD"
 	max_matter = INFINITY
 	matter = INFINITY
-	upgrade = TRUE
+	upgrade = RCD_FULLY_UPGRADED
 	ranged = TRUE
 
 // Ranged RCD
@@ -744,7 +758,7 @@ RLD
 			if(istype(A, /obj/machinery/light/))
 				if(checkResource(deconcost, user))
 					to_chat(user, "<span class='notice'>You start deconstructing [A]...</span>")
-					user.Beam(A,icon_state="nzcrentrs_power",time=15)
+					user.Beam(A,icon_state="light_beam",time=15)
 					playsound(src.loc, 'sound/machines/click.ogg', 50, 1)
 					if(do_after(user, decondelay, target = A))
 						if(!useResource(deconcost, user))
@@ -758,7 +772,7 @@ RLD
 				var/turf/closed/wall/W = A
 				if(checkResource(floorcost, user))
 					to_chat(user, "<span class='notice'>You start building a wall light...</span>")
-					user.Beam(A,icon_state="nzcrentrs_power",time=15)
+					user.Beam(A,icon_state="light_beam",time=15)
 					playsound(src.loc, 'sound/machines/click.ogg', 50, 1)
 					playsound(src.loc, 'sound/effects/light_flicker.ogg', 50, 0)
 					if(do_after(user, floordelay, target = A))
@@ -804,7 +818,7 @@ RLD
 				var/turf/open/floor/F = A
 				if(checkResource(floorcost, user))
 					to_chat(user, "<span class='notice'>You start building a floor light...</span>")
-					user.Beam(A,icon_state="nzcrentrs_power",time=15)
+					user.Beam(A,icon_state="light_beam",time=15)
 					playsound(src.loc, 'sound/machines/click.ogg', 50, 1)
 					playsound(src.loc, 'sound/effects/light_flicker.ogg', 50, 1)
 					if(do_after(user, floordelay, target = A))
@@ -832,6 +846,12 @@ RLD
 				G.update_brightness()
 				return TRUE
 			return FALSE
+
+/obj/item/construction/rld/mini
+	name = "mini-rapid-light-device (MRLD)"
+	desc = "A device used to rapidly provide lighting sources to an area. Reload with metal, plasteel, glass or compressed matter cartridges."
+	matter = 100
+	max_matter = 100
 
 /obj/item/rcd_upgrade
 	name = "RCD advanced design disk"

@@ -37,7 +37,9 @@
 
 	var/next_move = null
 	var/create_area_cooldown
-	var/notransform = null	//Carbon
+	/// Whether or not the mob is currently being transformed into another mob or into another state of being. This will prevent it from moving or doing realistically anything.
+	/// Don't you DARE use this for a cheap way to ensure someone is stunned in your code.
+	var/mob_transforming = FALSE
 	var/eye_blind = 0		//Carbon
 	var/eye_blurry = 0		//Carbon
 	var/real_name = null
@@ -121,11 +123,20 @@
 
 	var/list/progressbars = null	//for stacking do_after bars
 
+	var/list/do_afters
+
 	var/list/mousemove_intercept_objects
 
 	var/datum/click_intercept
 
 	var/registered_z
+
+	var/list/alerts = list() // contains /obj/screen/alert only // On /mob so clientless mobs will throw alerts properly
+	var/list/screens = list()
+	var/list/client_colours = list()
+	var/hud_type = /datum/hud
+
+	var/datum/hSB/sandbox = null
 
 	var/mob/audiovisual_redirect //Mob to redirect messages, speech, and sounds to
 
@@ -134,8 +145,9 @@
 
 	var/voluntary_ghosted = FALSE		//whether or not they voluntarily ghosted.
 
-	var/flavor_text = ""
-	var/flavor_text_2 = "" //version of the above that only lasts for the current round.
+	var/has_field_of_vision = FALSE
+	var/field_of_vision_type = FOV_90_DEGREES
+
 
 	///////TYPING INDICATORS///////
 	/// Set to true if we want to show typing indicators.

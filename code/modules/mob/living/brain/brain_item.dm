@@ -76,9 +76,6 @@
 		REMOVE_SKILL_MODIFIER_BODY(/datum/skill_modifier/heavy_brain_damage, null, C)
 		C.update_hair()
 
-/obj/item/organ/brain/prepare_eat()
-	return // Too important to eat.
-
 /obj/item/organ/brain/proc/transfer_identity(mob/living/L)
 	name = "[L.name]'s brain"
 	if(brainmob)
@@ -137,11 +134,11 @@
 		if(cached_Bdamage <= HEALTH_THRESHOLD_DEAD) //Fixing dead brains yeilds a trauma
 			if((cached_Bdamage <= HEALTH_THRESHOLD_DEAD) && (brainmob.health > HEALTH_THRESHOLD_DEAD))
 				if(prob(80))
-					gain_trauma_type(BRAIN_TRAUMA_MILD)
+					gain_trauma_type(BRAIN_TRAUMA_MILD, natural_gain = TRUE)
 				else if(prob(50))
-					gain_trauma_type(BRAIN_TRAUMA_SEVERE)
+					gain_trauma_type(BRAIN_TRAUMA_SEVERE, natural_gain = TRUE)
 				else
-					gain_trauma_type(BRAIN_TRAUMA_SPECIAL)
+					gain_trauma_type(BRAIN_TRAUMA_SPECIAL, natural_gain = TRUE)
 		return
 
 	if((organ_flags & ORGAN_FAILING) && O.is_drainable() && O.reagents.has_reagent(/datum/reagent/medicine/mannitol)) //attempt to heal the brain
@@ -167,9 +164,10 @@
 
 
 
-/obj/item/organ/brain/examine(mob/user)
+/obj/item/organ/brain/surgical_examine(mob/user)
 	. = ..()
-
+	if(owner)
+		return
 	if(user.suiciding)
 		. += "<span class='info'>It's started turning slightly grey. They must not have been able to handle the stress of it all.</span>"
 	else if(brainmob)
@@ -208,7 +206,7 @@
 
 //since these people will be dead M != usr
 
-	if(!C.getorgan(/obj/item/organ/brain))
+	if(!C.getorgan(/obj/item/organ/brain) && (user.zone_selected == zone))
 		if(!C.get_bodypart(BODY_ZONE_HEAD) || !user.temporarilyRemoveItemFromInventory(src))
 			return
 		var/msg = "[C] has [src] inserted into [C.p_their()] head by [user]."
@@ -253,16 +251,16 @@
 	damage_delta = damage - prev_damage
 	if(damage > BRAIN_DAMAGE_MILD)
 		if(prob(damage_delta * (1 + max(0, (damage - BRAIN_DAMAGE_MILD)/100)))) //Base chance is the hit damage; for every point of damage past the threshold the chance is increased by 1% //learn how to do your bloody math properly goddamnit
-			gain_trauma_type(BRAIN_TRAUMA_MILD)
+			gain_trauma_type(BRAIN_TRAUMA_MILD, natural_gain = TRUE)
 			if(prev_damage <= BRAIN_DAMAGE_MILD && owner)
 				var/datum/skill_modifier/S
 				ADD_SKILL_MODIFIER_BODY(/datum/skill_modifier/brain_damage, null, owner, S)
 	if(damage > BRAIN_DAMAGE_SEVERE)
 		if(prob(damage_delta * (1 + max(0, (damage - BRAIN_DAMAGE_SEVERE)/100)))) //Base chance is the hit damage; for every point of damage past the threshold the chance is increased by 1%
 			if(prob(20))
-				gain_trauma_type(BRAIN_TRAUMA_SPECIAL)
+				gain_trauma_type(BRAIN_TRAUMA_SPECIAL, natural_gain = TRUE)
 			else
-				gain_trauma_type(BRAIN_TRAUMA_SEVERE)
+				gain_trauma_type(BRAIN_TRAUMA_SEVERE, natural_gain = TRUE)
 			if(prev_damage <= BRAIN_DAMAGE_SEVERE && owner)
 				var/datum/skill_modifier/S
 				ADD_SKILL_MODIFIER_BODY(/datum/skill_modifier/heavy_brain_damage, null, owner, S)
@@ -308,7 +306,7 @@
 		if(istype(BT, brain_trauma_type) && (BT.resilience <= resilience))
 			. += BT
 
-/obj/item/organ/brain/proc/can_gain_trauma(datum/brain_trauma/trauma, resilience)
+/obj/item/organ/brain/proc/can_gain_trauma(datum/brain_trauma/trauma, resilience, natural_gain = FALSE)
 	if(!ispath(trauma))
 		trauma = trauma.type
 	if(!initial(trauma.can_gain))
@@ -334,6 +332,10 @@
 			max_traumas = TRAUMA_LIMIT_BASIC
 		if(TRAUMA_RESILIENCE_SURGERY)
 			max_traumas = TRAUMA_LIMIT_SURGERY
+		//skyrat edit
+		if(TRAUMA_RESILIENCE_WOUND)
+			max_traumas = TRAUMA_LIMIT_WOUND
+		//
 		if(TRAUMA_RESILIENCE_LOBOTOMY)
 			max_traumas = TRAUMA_LIMIT_LOBOTOMY
 		if(TRAUMA_RESILIENCE_MAGIC)
@@ -341,7 +343,7 @@
 		if(TRAUMA_RESILIENCE_ABSOLUTE)
 			max_traumas = TRAUMA_LIMIT_ABSOLUTE
 
-	if(resilience_tier_count >= max_traumas)
+	if(natural_gain && resilience_tier_count >= max_traumas)
 		return FALSE
 	return TRUE
 
@@ -381,18 +383,18 @@
 	return actual_trauma
 
 //Add a random trauma of a certain subtype
-/obj/item/organ/brain/proc/gain_trauma_type(brain_trauma_type = /datum/brain_trauma, resilience)
+/obj/item/organ/brain/proc/gain_trauma_type(brain_trauma_type = /datum/brain_trauma, resilience, natural_gain = FALSE)
 	var/list/datum/brain_trauma/possible_traumas = list()
 	for(var/T in subtypesof(brain_trauma_type))
 		var/datum/brain_trauma/BT = T
-		if(can_gain_trauma(BT, resilience) && initial(BT.random_gain))
+		if(can_gain_trauma(BT, resilience, natural_gain) && initial(BT.random_gain))
 			possible_traumas += BT
 
 	if(!LAZYLEN(possible_traumas))
 		return
 
 	var/trauma_type = pick(possible_traumas)
-	gain_trauma(trauma_type, resilience)
+	return gain_trauma(trauma_type, resilience) //skyrat edit
 
 //Cure a random trauma of a certain resilience level
 /obj/item/organ/brain/proc/cure_trauma_type(brain_trauma_type = /datum/brain_trauma, resilience = TRAUMA_RESILIENCE_BASIC)

@@ -30,6 +30,8 @@
 	var/list/datum/design/matching_designs
 	var/selected_category
 	var/screen = 1
+	var/base_price = 25
+	var/hacked_price = 50
 
 	var/datum/techweb/specialized/autounlocking/stored_research = /datum/techweb/specialized/autounlocking/autolathe
 	var/list/categories = list(
@@ -44,28 +46,16 @@
 							"Dinnerware",
 							"Imported"
 							)
-	var/list/allowed_materials = list(
-		/datum/material/iron,
-		/datum/material/glass,
-		/datum/material/gold,
-		/datum/material/silver,
-		/datum/material/diamond,
-		/datum/material/uranium,
-		/datum/material/plasma,
-		/datum/material/bluespace,
-		/datum/material/bananium,
-		/datum/material/titanium,
-		/datum/material/runite,
-		/datum/material/plastic,
-		/datum/material/adamantine,
-		/datum/material/mythril
-		)
+	var/list/allowed_materials
 
 	/// Base print speed
 	var/base_print_speed = 10
 
 /obj/machinery/autolathe/Initialize()
-	AddComponent(/datum/component/material_container, allowed_materials, _show_on_examine=TRUE, _after_insert=CALLBACK(src, .proc/AfterMaterialInsert))
+	var/list/mats = allowed_materials
+	if(!mats)
+		mats = SSmaterials.materialtypes_by_category[MAT_CATEGORY_RIGID]
+	AddComponent(/datum/component/material_container, mats, _show_on_examine=TRUE, _after_insert=CALLBACK(src, .proc/AfterMaterialInsert))
 	. = ..()
 	wires = new /datum/wires/autolathe(src)
 	stored_research = new stored_research

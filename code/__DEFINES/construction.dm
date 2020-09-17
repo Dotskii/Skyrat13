@@ -67,8 +67,11 @@
 //tablecrafting defines
 #define CAT_NONE	""
 #define CAT_WEAPONRY	"Weaponry"
-#define CAT_WEAPON	"Weapons"
+#define CAT_WEAPON	"Ranged Weapons"
+#define CAT_MELEE	"Melee Weapons"
+#define CAT_OTHER	"Misc"
 #define CAT_AMMO	"Ammunition"
+#define CAT_PARTS	"Weapon Parts"
 #define CAT_ROBOT	"Robots"
 #define CAT_MISC	"Misc"
 #define CAT_MISCELLANEOUS	"Miscellaneous"
@@ -104,6 +107,7 @@
 
 #define RCD_UPGRADE_FRAMES 1
 #define RCD_UPGRADE_SIMPLE_CIRCUITS 2
+#define RCD_FULLY_UPGRADED RCD_UPGRADE_FRAMES | RCD_UPGRADE_SIMPLE_CIRCUITS
 
 //Electrochromatic window defines.
 #define NOT_ELECTROCHROMATIC		0

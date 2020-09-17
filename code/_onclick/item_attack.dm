@@ -7,21 +7,17 @@
   *and lastly
   *afterattack. The return value does not matter.
   */
-/obj/item/proc/melee_attack_chain(mob/user, atom/target, params)
+/obj/item/proc/melee_attack_chain(mob/user, atom/target, params, flags, damage_multiplier = 1)
 	if(isliving(user))
 		var/mob/living/L = user
-		if(item_flags & NO_ATTACK_CHAIN_SOFT_STAMCRIT)
-			if(IS_STAMCRIT(L))
-				to_chat(L, "<span class='warning'>You are too exhausted to swing [src]!</span>")
-				return
-		if(!CHECK_MOBILITY(L, MOBILITY_USE))
+		if(!CHECK_MOBILITY(L, MOBILITY_USE) && !(flags & ATTACKCHAIN_PARRY_COUNTERATTACK))
 			to_chat(L, "<span class='warning'>You are unable to swing [src] right now!</span>")
 			return
 	if(tool_behaviour && target.tool_act(user, src, tool_behaviour))
 		return
 	if(pre_attack(target, user, params))
 		return
-	if(target.attackby(src,user, params))
+	if(target.attackby(src, user, params, flags, damage_multiplier))
 		return
 	if(QDELETED(src) || QDELETED(target))
 		return
@@ -40,6 +36,7 @@
 /obj/item/proc/attack_self(mob/user)
 	if(SEND_SIGNAL(src, COMSIG_ITEM_ATTACK_SELF, user) & COMPONENT_NO_INTERACT)
 		return
+	SEND_SIGNAL(user, COMSIG_MOB_ITEM_ATTACK_SELF, src) //Skyrat change
 	interact(user)
 
 /obj/item/proc/pre_attack(atom/A, mob/living/user, params) //do stuff before attackby!
@@ -56,23 +53,31 @@
 /obj/attackby(obj/item/I, mob/living/user, params)
 	return ..() || ((obj_flags & CAN_BE_HIT) && I.attack_obj(src, user))
 
-/mob/living/attackby(obj/item/I, mob/living/user, params)
+/mob/living/attackby(obj/item/I, mob/living/user, params, attackchain_flags, damage_multiplier)
 	if(..())
 		return TRUE
-	user.changeNext_move(CLICK_CD_MELEE)
-	return I.attack(src, user)
+	I.attack_delay_done = FALSE //Should be set TRUE in pre_attacked_by()
+	. = I.attack(src, user, attackchain_flags, damage_multiplier)
+	if(!I.attack_delay_done) //Otherwise, pre_attacked_by() should handle it.
+		user.changeNext_move(I.click_delay)
 
-/obj/item/proc/attack(mob/living/M, mob/living/user)
+/**
+  * Called when someone uses us to attack a mob in melee combat.
+  *
+  * This proc respects CheckAttackCooldown() default clickdelay handling.
+  *
+  * @params
+  * * mob/living/M - target
+  * * mob/living/user - attacker
+  * * attackchain_Flags - see [code/__DEFINES/_flags/return_values.dm]
+  * * damage_multiplier - what to multiply the damage by
+  */
+/obj/item/proc/attack(mob/living/M, mob/living/user, attackchain_flags = NONE, damage_multiplier = 1)
 	if(SEND_SIGNAL(src, COMSIG_ITEM_ATTACK, M, user) & COMPONENT_ITEM_NO_ATTACK)
 		return
 	SEND_SIGNAL(user, COMSIG_MOB_ITEM_ATTACK, M, user)
 	if(item_flags & NOBLUDGEON)
 		return
-
-	if(IS_STAMCRIT(user)) // CIT CHANGE - makes it impossible to attack in stamina softcrit
-		to_chat(user, "<span class='warning'>You're too exhausted.</span>") // CIT CHANGE - ditto
-		return // CIT CHANGE - ditto
-
 	if(force && damtype != STAMINA && HAS_TRAIT(user, TRAIT_PACIFISM))
 		to_chat(user, "<span class='warning'>You don't want to harm other living beings!</span>")
 		return
@@ -86,12 +91,14 @@
 	M.lastattackerckey = user.ckey
 
 	user.do_attack_animation(M)
-	M.attacked_by(src, user)
+	M.attacked_by(src, user, attackchain_flags, damage_multiplier)
 
 	log_combat(user, M, "attacked", src.name, "(INTENT: [uppertext(user.a_intent)]) (DAMTYPE: [uppertext(damtype)])")
 	add_fingerprint(user)
 
-	user.adjustStaminaLossBuffered(getweight(user, STAM_COST_ATTACK_MOB_MULT))//CIT CHANGE - makes attacking things cause stamina loss
+	var/weight = getweight(user, STAM_COST_ATTACK_MOB_MULT) //CIT CHANGE - makes attacking things cause stamina loss
+	if(weight)
+		user.adjustStaminaLossBuffered(weight)
 
 //the equivalent of the standard version of attack() but for object targets.
 /obj/item/proc/attack_obj(obj/O, mob/living/user)
@@ -99,23 +106,31 @@
 		return
 	if(item_flags & NOBLUDGEON)
 		return
-	if(IS_STAMCRIT(user)) // CIT CHANGE - makes it impossible to attack in stamina softcrit
-		to_chat(user, "<span class='warning'>You're too exhausted.</span>") // CIT CHANGE - ditto
-		return // CIT CHANGE - ditto
-	user.adjustStaminaLossBuffered(getweight(user, STAM_COST_ATTACK_OBJ_MULT))//CIT CHANGE - makes attacking things cause stamina loss
-	user.changeNext_move(CLICK_CD_MELEE)
 	user.do_attack_animation(O)
-	O.attacked_by(src, user)
+	if(!O.attacked_by(src, user))
+		user.changeNext_move(click_delay)
+	var/weight = getweight(user, STAM_COST_ATTACK_OBJ_MULT)
+	if(weight)
+		user.adjustStaminaLossBuffered(weight)//CIT CHANGE - makes attacking things cause stamina loss
 
 /atom/movable/proc/attacked_by()
 	return
 
-/obj/attacked_by(obj/item/I, mob/living/user)
-	var/totitemdamage = I.force
+/obj/attacked_by(obj/item/I, mob/living/user, attackchain_flags = NONE, damage_multiplier = 1)
+	var/totitemdamage = I.force * damage_multiplier
 	var/bad_trait
-	if(!(user.combat_flags & COMBAT_FLAG_COMBAT_ACTIVE) && iscarbon(user))
-		totitemdamage *= 0.5
+
+	var/stamloss = user.getStaminaLoss()
+	var/next_move_mult = 1
+	if(stamloss > STAMINA_NEAR_SOFTCRIT) //The more tired you are, the less damage you do.
+		var/penalty = (stamloss - STAMINA_NEAR_SOFTCRIT)/(STAMINA_NEAR_CRIT - STAMINA_NEAR_SOFTCRIT)*STAM_CRIT_ITEM_ATTACK_PENALTY
+		totitemdamage *= 1 - penalty
+		next_move_mult += penalty*STAM_CRIT_ITEM_ATTACK_DELAY
+	user.changeNext_move(I.click_delay*next_move_mult)
+
+	if(SEND_SIGNAL(user, COMSIG_COMBAT_MODE_CHECK, COMBAT_MODE_INACTIVE))
 		bad_trait = SKILL_COMBAT_MODE //blacklist combat skills.
+
 	if(I.used_skills && user.mind)
 		if(totitemdamage)
 			totitemdamage = user.mind.item_action_skills_mod(I, totitemdamage, I.skill_difficulty, SKILL_ATTACK_OBJ, bad_trait)
@@ -123,43 +138,75 @@
 			if(!(I.used_skills[skill] & SKILL_TRAIN_ATTACK_OBJ))
 				continue
 			user.mind.auto_gain_experience(skill, I.skill_gain)
+
 	if(totitemdamage)
 		visible_message("<span class='danger'>[user] has hit [src] with [I]!</span>", null, null, COMBAT_MESSAGE_RANGE)
 		//only witnesses close by and the victim see a hit message.
 		log_combat(user, src, "attacked", I)
 	take_damage(totitemdamage, I.damtype, "melee", 1)
+	return TRUE
 
-/mob/living/attacked_by(obj/item/I, mob/living/user)
-	var/totitemdamage = pre_attacked_by(I, user)
-	if((user != src) && mob_run_block(I, totitemdamage, "the [I.name]", ATTACK_TYPE_MELEE, I.armour_penetration, user, null, null) & BLOCK_SUCCESS)
+/mob/living/attacked_by(obj/item/I, mob/living/user, attackchain_flags = NONE, damage_multiplier = 1)
+	var/list/block_return = list()
+	var/totitemdamage = pre_attacked_by(I, user) * damage_multiplier
+	if((user != src) && mob_run_block(I, totitemdamage, "the [I.name]", ((attackchain_flags & ATTACKCHAIN_PARRY_COUNTERATTACK)? ATTACK_TYPE_PARRY_COUNTERATTACK : NONE) | ATTACK_TYPE_MELEE, I.armour_penetration, user, null, block_return) & BLOCK_SUCCESS)
 		return FALSE
-	send_item_attack_message(I, user)
+	totitemdamage = block_calculate_resultant_damage(totitemdamage, block_return)
+	send_item_attack_message(I, user, null, totitemdamage)
 	I.do_stagger_action(src, user, totitemdamage)
 	if(I.force)
 		apply_damage(totitemdamage, I.damtype)
 		if(I.damtype == BRUTE)
 			if(prob(33))
 				I.add_mob_blood(src)
-				var/turf/location = get_turf(src)
-				add_splatter_floor(location)
 				if(totitemdamage >= 10 && get_dist(user, src) <= 1)	//people with TK won't get smeared with blood
 					user.add_mob_blood(src)
+				var/dist = rand(0,max(min(round(totitemdamage/5, 1),3), 1))
+				var/turf/location = get_turf(src)
+				if(istype(location))
+					add_splatter_floor(location)
+				var/turf/targ = get_ranged_target_turf(user, get_dir(user, src), dist)
+				if(istype(targ) && dist > 0 && ((mob_biotypes & MOB_ORGANIC) || (mob_biotypes & MOB_HUMANOID)))
+					var/obj/effect/decal/cleanable/blood/hitsplatter/B = new(loc, get_blood_dna_list())
+					B.add_blood_DNA(get_blood_dna_list())
+					B.GoTo(targ, dist)
+
 		return TRUE //successful attack
 
-/mob/living/simple_animal/attacked_by(obj/item/I, mob/living/user)
+/mob/living/simple_animal/attacked_by(obj/item/I, mob/living/user, attackchain_flags = NONE, damage_multiplier = 1)
 	if(I.force < force_threshold || I.damtype == STAMINA)
 		playsound(loc, 'sound/weapons/tap.ogg', I.get_clamped_volume(), 1, -1)
+		user.changeNext_move(I.click_delay) //pre_attacked_by not called
 	else
 		return ..()
 
 /mob/living/proc/pre_attacked_by(obj/item/I, mob/living/user)
 	. = I.force
+	if(!.)
+		return
+
+	var/stamloss = user.getStaminaLoss()
+	var/stam_mobility_mult = 1
+	var/next_move_mult = 1
+	if(stamloss > STAMINA_NEAR_SOFTCRIT) //The more tired you are, the less damage you do.
+		var/penalty = (stamloss - STAMINA_NEAR_SOFTCRIT)/(STAMINA_NEAR_CRIT - STAMINA_NEAR_SOFTCRIT)*STAM_CRIT_ITEM_ATTACK_PENALTY
+		stam_mobility_mult -= penalty
+		next_move_mult += penalty*STAM_CRIT_ITEM_ATTACK_DELAY
+	if(stam_mobility_mult > LYING_DAMAGE_PENALTY && !CHECK_MOBILITY(user, MOBILITY_STAND)) //damage penalty for fighting prone, doesn't stack with the above.
+		stam_mobility_mult = LYING_DAMAGE_PENALTY
+	. *= stam_mobility_mult
+	user.changeNext_move(I.click_delay*next_move_mult)
+	I.attack_delay_done = TRUE
+
 	var/bad_trait
-	if(!(user.combat_flags & COMBAT_FLAG_COMBAT_ACTIVE) && iscarbon(user))
-		. *= 0.5
-		bad_trait = SKILL_COMBAT_MODE //blacklist combat skills.
-	if(!CHECK_MOBILITY(user, MOBILITY_STAND))
-		. *= 0.5
+	if(!(I.item_flags & NO_COMBAT_MODE_FORCE_MODIFIER))
+		if(SEND_SIGNAL(user, COMSIG_COMBAT_MODE_CHECK, COMBAT_MODE_INACTIVE))
+			bad_trait = SKILL_COMBAT_MODE //blacklist combat skills.
+			if(SEND_SIGNAL(src, COMSIG_COMBAT_MODE_CHECK, COMBAT_MODE_ACTIVE))
+				. *= 0.8
+		else if(SEND_SIGNAL(src, COMSIG_COMBAT_MODE_CHECK, COMBAT_MODE_INACTIVE))
+			. *= 1.2
+
 	if(!user.mind || !I.used_skills)
 		return
 	if(.)
@@ -169,13 +216,20 @@
 			continue
 		user.mind.auto_gain_experience(skill, I.skill_gain)
 
-/mob/living/carbon/pre_attacked_by(obj/item/I, mob/living/user)
-	. = ..()
-	if(!(combat_flags & COMBAT_FLAG_COMBAT_ACTIVE))
-		. *= 1.5
-
-// Proximity_flag is 1 if this afterattack was called on something adjacent, in your square, or on your person.
-// Click parameters is the params string from byond Click() code, see that documentation.
+// Proximity_flag is 1 if this afterattack was called on something adjacent, in your square, or on your person.		//Skyrat Edit
+// Click parameters is the params string from byond Click() code, see that documentation.		//Skyrat Edit
+/**
+  * Called after attacking something if the melee attack chain isn't interrupted before.
+  * Also called when clicking on something with an item without being in melee range
+  *
+  * WARNING: This does not automatically check clickdelay if not in a melee attack! Be sure to account for this!
+  *
+  * @params
+  * * target - The thing we clicked
+  * * user - mob of person clicking
+  * * proximity_flag - are we in melee range/doing it in a melee attack
+  * * click_parameters - mouse control parameters, check BYOND ref.
+  */
 /obj/item/proc/afterattack(atom/target, mob/user, proximity_flag, click_parameters)
 	SEND_SIGNAL(src, COMSIG_ITEM_AFTERATTACK, target, user, proximity_flag, click_parameters)
 	SEND_SIGNAL(user, COMSIG_MOB_ITEM_AFTERATTACK, target, user, proximity_flag, click_parameters)
@@ -187,11 +241,13 @@
 		else
 			return clamp(w_class * 6, 10, 100) // Multiply the item's weight class by 6, then clamp the value between 10 and 100
 
-/mob/living/proc/send_item_attack_message(obj/item/I, mob/living/user, hit_area)
+/mob/living/proc/send_item_attack_message(obj/item/I, mob/living/user, hit_area, current_force, obj/item/bodypart/hit_BP)
 	var/message_verb = "attacked"
 	if(I.attack_verb && I.attack_verb.len)
 		message_verb = "[pick(I.attack_verb)]"
-	else if(!I.force)
+	if(current_force < I.force * FEEBLE_ATTACK_MSG_THRESHOLD)
+		message_verb = "[pick("feebly", "limply", "saplessly")] [message_verb]"
+	if(!I.force) //skyrat edit
 		return
 	var/message_hit_area = ""
 	if(hit_area)
@@ -212,11 +268,13 @@
 	if(!user)
 		return
 	var/bad_trait
-	if(iscarbon(user) && !(user.combat_flags & COMBAT_FLAG_COMBAT_ACTIVE))
+	if(SEND_SIGNAL(user, COMSIG_COMBAT_MODE_CHECK, COMBAT_MODE_INACTIVE))
 		. *= STAM_COST_NO_COMBAT_MULT
 		bad_trait = SKILL_COMBAT_MODE
 	if(used_skills && user.mind)
 		. = user.mind.item_action_skills_mod(src, ., skill_difficulty, trait, bad_trait, FALSE)
+	var/total_health = user.getStaminaLoss()
+	. = clamp(., 0, STAMINA_NEAR_CRIT - total_health)
 
 /// How long this staggers for. 0 and negatives supported.
 /obj/item/proc/melee_stagger_duration(force_override)

@@ -46,7 +46,7 @@
 	R.recalculateChannels()
 
 /datum/outfit/ert/commander/alert
-	name = "ERT Commander - Amber Alert"
+	name = "ERT Commander - Elevated Alert" //Skyrat change
 
 	suit = /obj/item/clothing/suit/space/hardsuit/ert/alert
 	glasses = /obj/item/clothing/glasses/thermal/eyepatch
@@ -56,8 +56,8 @@
 		/obj/item/gun/energy/e_gun=1)
 	l_pocket = /obj/item/melee/transforming/energy/sword/saber
 
-/datum/outfit/ert/commander/alert/red
-	name = "ERT Commander - Red Alert"
+/datum/outfit/ert/commander/alert/delta //Skyrat change
+	name = "ERT Commander - Delta Alert"
 	backpack_contents = list(/obj/item/storage/box/engineer=1,\
 		/obj/item/melee/baton/loaded=1,\
 		/obj/item/clothing/mask/gas/sechailer/swat=1,\
@@ -88,7 +88,7 @@
 	R.recalculateChannels()
 
 /datum/outfit/ert/security/alert
-	name = "ERT Security - Amber Alert"
+	name = "ERT Security - Elevated Alert" //Skyrat change
 
 	suit = /obj/item/clothing/suit/space/hardsuit/ert/alert/sec
 	backpack_contents = list(/obj/item/storage/box/engineer=1,\
@@ -97,8 +97,8 @@
 		/obj/item/melee/baton/loaded=1,\
 		/obj/item/gun/energy/e_gun/stun=1)
 
-/datum/outfit/ert/security/alert/red
-	name = "ERT Security - Red Alert"
+/datum/outfit/ert/security/alert/delta //Skyrat change
+	name = "ERT Security - Delta Alert"
 	backpack_contents = list(/obj/item/storage/box/engineer=1,\
 		/obj/item/storage/box/handcuffs=1,\
 		/obj/item/clothing/mask/gas/sechailer/swat=1,\
@@ -132,7 +132,7 @@
 	R.recalculateChannels()
 
 /datum/outfit/ert/medic/alert
-	name = "ERT Medic - Amber Alert"
+	name = "ERT Medic - Elevated Alert" //Skyrat change
 
 	suit = /obj/item/clothing/suit/space/hardsuit/ert/alert/med
 	backpack_contents = list(/obj/item/storage/box/engineer=1,\
@@ -142,8 +142,8 @@
 		/obj/item/reagent_containers/hypospray/combat/nanites=1,\
 		/obj/item/gun/medbeam=1)
 
-/datum/outfit/ert/medic/alert/red
-	name = "ERT Medic - Red Alert"
+/datum/outfit/ert/medic/alert/delta //Skyratchange
+	name = "ERT Medic - Delta Alert"
 	backpack_contents = list(/obj/item/storage/box/engineer=1,\
 		/obj/item/melee/baton/loaded=1,\
 		/obj/item/clothing/mask/gas/sechailer/swat=1,\
@@ -158,14 +158,15 @@
 	suit = /obj/item/clothing/suit/space/hardsuit/ert/engi
 	glasses =  /obj/item/clothing/glasses/meson/engine
 	back = /obj/item/storage/backpack/industrial
-	belt = /obj/item/storage/belt/utility/full
+	belt = /obj/item/storage/belt/utility/full/power
 	l_pocket = /obj/item/rcd_ammo/large
 	r_hand = /obj/item/storage/firstaid/regular
 	backpack_contents = list(/obj/item/storage/box/engineer=1,\
 		/obj/item/melee/baton/loaded=1,\
 		/obj/item/clothing/mask/gas/sechailer=1,\
 		/obj/item/gun/energy/e_gun=1,\
-		/obj/item/construction/rcd/loaded=1)
+		/obj/item/pipe_dispenser/bluespace=1,\
+		/obj/item/construction/rcd/loaded/upgraded=1)
 
 /datum/outfit/ert/engineer/post_equip(mob/living/carbon/human/H, visualsOnly = FALSE, client/preference_source)
 	..()
@@ -178,21 +179,23 @@
 	R.recalculateChannels()
 
 /datum/outfit/ert/engineer/alert
-	name = "ERT Engineer - Amber Alert"
+	name = "ERT Engineer - Elevated Alert" //Skyrat change
 
 	suit = /obj/item/clothing/suit/space/hardsuit/ert/alert/engi
 	backpack_contents = list(/obj/item/storage/box/engineer=1,\
 		/obj/item/melee/baton/loaded=1,\
 		/obj/item/clothing/mask/gas/sechailer/swat=1,\
 		/obj/item/gun/energy/e_gun=1,\
+		/obj/item/pipe_dispenser/bluespace=1,\
 		/obj/item/construction/rcd/combat=1)
 
-/datum/outfit/ert/engineer/alert/red
-	name = "ERT Engineer - Red Alert"
+/datum/outfit/ert/engineer/alert/delta //Skyrat change
+	name = "ERT Engineer - Delta Alert"
 	backpack_contents = list(/obj/item/storage/box/engineer=1,\
 		/obj/item/melee/baton/loaded=1,\
 		/obj/item/clothing/mask/gas/sechailer/swat=1,\
 		/obj/item/gun/energy/pulse/pistol/loyalpin=1,\
+		/obj/item/pipe_dispenser/bluespace=1, \
 		/obj/item/construction/rcd/combat=1)
 
 /datum/outfit/ert/greybois
@@ -247,6 +250,9 @@
 	pda.owner = H.real_name
 	pda.ownjob = "CentCom Official"
 	pda.update_label()
+
+	var/obj/item/implant/mindshield/L = new
+	L.implant(H, null, 1)
 
 	var/obj/item/card/id/W = H.wear_id
 	W.icon_state = "centcom"
