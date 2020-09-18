@@ -3,6 +3,7 @@
 	desc = "A vending machine which dispenses hot drinks. Nothing to see here."
 	icon = 'icons/obj/vending.dmi'
 	icon_state = "coffee"
+	density = TRUE //fuck
 	var/dispensing = FALSE
 	var/cooldown_time = 5 MINUTES
 	var/cooldown = 0
