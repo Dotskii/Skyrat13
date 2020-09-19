@@ -22,7 +22,9 @@ SUBSYSTEM_DEF(jukeboxes)
 /datum/controller/subsystem/jukeboxes/proc/addjukebox(obj/jukebox, datum/track/T, jukefalloff = 1)
 	if(!istype(T))
 		CRASH("[src] tried to play a song with a nonexistant track")
-	var/channeltoreserve = pick(freejukeboxchannels)
+	var/channeltoreserve
+	if(length(freejukeboxchannels))
+		channeltoreserve = pick(freejukeboxchannels)
 	if(!channeltoreserve)
 		return FALSE
 	freejukeboxchannels -= channeltoreserve
