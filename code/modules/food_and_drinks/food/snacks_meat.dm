@@ -69,6 +69,8 @@
 	tastes = list("fish" = 1, "pan seared vegtables" = 1)
 	foodtype = MEAT | VEGETABLES | FRIED
 
+/* new era -- someone made both sushi_... AND sushie_... types, both are fucked, they're duped,
+			  so we're commenting all of them and making our own snacks_sushi.dm 
 /obj/item/reagent_containers/food/snacks/sushi_basic
 	name = "funa hosomaki"
 	desc = "A small cylindrical kudzu skin, filled with rice and fish."
@@ -101,7 +103,7 @@
 	filling_color = "#F2EEEA" //rgb(242, 238, 234)
 	tastes = list("fish" = 3, "rice" = 2, "salt" = 1)
 	foodtype = MEAT | VEGETABLES
-
+*/
 
 ////////////////////////////////////////////MEATS AND ALIKE////////////////////////////////////////////
 

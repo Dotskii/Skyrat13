@@ -61,7 +61,7 @@
 		/obj/item/reagent_containers/food/snacks/carpmeat = 2,
 		/obj/item/reagent_containers/food/snacks/sea_weed = 3,
 	)
-	result = /obj/item/reagent_containers/food/snacks/sushie_basic
+	result = /obj/item/reagent_containers/food/snacks/sushi_basic //new era -- sushi grammar
 	subcategory = CAT_SEAFOOD
 
 /datum/crafting_recipe/food/sushie_adv
@@ -71,7 +71,7 @@
 		/obj/item/reagent_containers/food/snacks/sushi_rice = 1,
 		/obj/item/reagent_containers/food/snacks/carpmeat = 1
 	)
-	result = /obj/item/reagent_containers/food/snacks/sushie_adv
+	result = /obj/item/reagent_containers/food/snacks/sushi_adv //new era -- sushi grammar
 	subcategory = CAT_SEAFOOD
 
 /datum/crafting_recipe/food/sushie_pro
@@ -82,7 +82,7 @@
 		/obj/item/reagent_containers/food/snacks/carpmeat = 5,
 		/obj/item/reagent_containers/food/snacks/sea_weed = 1
 	)
-	result = /obj/item/reagent_containers/food/snacks/sushie_pro
+	result = /obj/item/reagent_containers/food/snacks/sushi_pro //new era -- sushi grammar
 	subcategory = CAT_SEAFOOD
 
 //////////////////////////////////////////////FISH///////////////////////////////////////////

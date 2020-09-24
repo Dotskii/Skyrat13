@@ -4325,6 +4325,7 @@
 #include "newerastation\code\modules\clothing\chameleon.dm"
 #include "newerastation\code\modules\events\infiltrators.dm"
 #include "newerastation\code\modules\food_and_drinks\drinks\drinks.dm"
+#include "newerastation\code\modules\food_and_drinks\food\snacks_sushi.dm"
 #include "newerastation\code\modules\food_and_drinks\recipes\drinks_recipes.dm"
 #include "newerastation\code\modules\integrated_electronics\hevsound.dm"
 #include "newerastation\code\modules\mob\living\silicon\ai\ai.dm"
